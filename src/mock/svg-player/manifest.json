@@ -1,0 +1,98 @@
+{
+  "dataset": "svg-player-segments",
+  "image": "test.png",
+  "source": {
+    "image": "source.test.png",
+    "audio": "source.test_tts.mp3",
+    "ocr": "source.ocr.json",
+    "tts": "source.tts.json"
+  },
+  "segment_count": 5,
+  "segments": [
+    {
+      "id": "segment-01",
+      "image": "test.png",
+      "audio": "segment-01.mp3",
+      "ocr": "segment-01.ocr.json",
+      "tts": "segment-01.tts.json",
+      "global_time_range_ms": [
+        20148,
+        21837
+      ],
+      "duration_ms": 1689,
+      "word_index_range": [
+        62,
+        67
+      ],
+      "text": "An elephant's a river in Africa."
+    },
+    {
+      "id": "segment-02",
+      "image": "test.png",
+      "audio": "segment-02.mp3",
+      "ocr": "segment-02.ocr.json",
+      "tts": "segment-02.tts.json",
+      "global_time_range_ms": [
+        21837,
+        24878
+      ],
+      "duration_ms": 3041,
+      "word_index_range": [
+        68,
+        76
+      ],
+      "text": "nose, or trunk, is like a long water hose."
+    },
+    {
+      "id": "segment-03",
+      "image": "test.png",
+      "audio": "segment-03.mp3",
+      "ocr": "segment-03.ocr.json",
+      "tts": "segment-03.tts.json",
+      "global_time_range_ms": [
+        25328,
+        29657
+      ],
+      "duration_ms": 4329,
+      "word_index_range": [
+        77,
+        91
+      ],
+      "text": "An elephant that is underwater pokes its trunk up out of the water to breathe."
+    },
+    {
+      "id": "segment-04",
+      "image": "test.png",
+      "audio": "segment-04.mp3",
+      "ocr": "segment-04.ocr.json",
+      "tts": "segment-04.tts.json",
+      "global_time_range_ms": [
+        30107,
+        32877
+      ],
+      "duration_ms": 2770,
+      "word_index_range": [
+        92,
+        99
+      ],
+      "text": "That elephant's nose doesn't look anything like yours."
+    },
+    {
+      "id": "segment-05",
+      "image": "test.png",
+      "audio": "segment-05.mp3",
+      "ocr": "segment-05.ocr.json",
+      "tts": "segment-05.tts.json",
+      "global_time_range_ms": [
+        33328,
+        36628
+      ],
+      "duration_ms": 3300,
+      "word_index_range": [
+        100,
+        111
+      ],
+      "text": "But an elephant needs exactly the nose it has to stay alive."
+    }
+  ]
+}

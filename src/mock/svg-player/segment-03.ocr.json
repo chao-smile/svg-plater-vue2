@@ -1,0 +1,628 @@
+{
+  "code": 200,
+  "data": {
+    "width": 1235,
+    "height": 774,
+    "words": [
+      {
+        "text": "An",
+        "handwritten": 0,
+        "rotated_rect": [
+          67,
+          430,
+          20,
+          13,
+          0
+        ],
+        "char_candidates": [
+          [
+            "A",
+            "a"
+          ],
+          [
+            "n"
+          ]
+        ],
+        "char_candidates_score": [
+          [
+            0.999,
+            0
+          ],
+          [
+            0.999
+          ]
+        ]
+      },
+      {
+        "text": "elephant",
+        "handwritten": 0,
+        "rotated_rect": [
+          115,
+          430,
+          61,
+          13,
+          0
+        ],
+        "char_candidates": [
+          [
+            "e"
+          ],
+          [
+            "l"
+          ],
+          [
+            "e"
+          ],
+          [
+            "p"
+          ],
+          [
+            "h"
+          ],
+          [
+            "a"
+          ],
+          [
+            "n"
+          ],
+          [
+            "t"
+          ]
+        ],
+        "char_candidates_score": [
+          [
+            0.999
+          ],
+          [
+            0.999
+          ],
+          [
+            0.999
+          ],
+          [
+            0.999
+          ],
+          [
+            0.999
+          ],
+          [
+            0.999
+          ],
+          [
+            0.999
+          ],
+          [
+            0.999
+          ]
+        ]
+      },
+      {
+        "text": "that",
+        "handwritten": 0,
+        "rotated_rect": [
+          165,
+          430,
+          27,
+          12,
+          0
+        ],
+        "char_candidates": [
+          [
+            "t"
+          ],
+          [
+            "h"
+          ],
+          [
+            "a"
+          ],
+          [
+            "t",
+            "r"
+          ]
+        ],
+        "char_candidates_score": [
+          [
+            0.999
+          ],
+          [
+            0.999
+          ],
+          [
+            0.999
+          ],
+          [
+            0.999,
+            0
+          ]
+        ]
+      },
+      {
+        "text": "is",
+        "handwritten": 0,
+        "rotated_rect": [
+          193,
+          430,
+          12,
+          12,
+          0
+        ],
+        "char_candidates": [
+          [
+            "i",
+            "ì"
+          ],
+          [
+            "s"
+          ]
+        ],
+        "char_candidates_score": [
+          [
+            0.999,
+            0
+          ],
+          [
+            0.999
+          ]
+        ]
+      },
+      {
+        "text": "underwater",
+        "handwritten": 0,
+        "rotated_rect": [
+          244,
+          431,
+          78,
+          9,
+          0
+        ],
+        "char_candidates": [
+          [
+            "u"
+          ],
+          [
+            "n"
+          ],
+          [
+            "d"
+          ],
+          [
+            "e"
+          ],
+          [
+            "r"
+          ],
+          [
+            "w"
+          ],
+          [
+            "a"
+          ],
+          [
+            "t"
+          ],
+          [
+            "e"
+          ],
+          [
+            "r"
+          ]
+        ],
+        "char_candidates_score": [
+          [
+            0.999
+          ],
+          [
+            0.999
+          ],
+          [
+            0.999
+          ],
+          [
+            0.999
+          ],
+          [
+            0.999
+          ],
+          [
+            0.999
+          ],
+          [
+            0.999
+          ],
+          [
+            0.999
+          ],
+          [
+            0.999
+          ],
+          [
+            0.999
+          ]
+        ]
+      },
+      {
+        "text": "pokes",
+        "handwritten": 0,
+        "rotated_rect": [
+          310,
+          432,
+          38,
+          11,
+          0
+        ],
+        "char_candidates": [
+          [
+            "p"
+          ],
+          [
+            "o"
+          ],
+          [
+            "k"
+          ],
+          [
+            "e"
+          ],
+          [
+            "s"
+          ]
+        ],
+        "char_candidates_score": [
+          [
+            0.999
+          ],
+          [
+            0.999
+          ],
+          [
+            0.999
+          ],
+          [
+            0.999
+          ],
+          [
+            0.999
+          ]
+        ]
+      },
+      {
+        "text": "its",
+        "handwritten": 0,
+        "rotated_rect": [
+          345,
+          430,
+          16,
+          13,
+          0
+        ],
+        "char_candidates": [
+          [
+            "i",
+            "l"
+          ],
+          [
+            "t"
+          ],
+          [
+            "s"
+          ]
+        ],
+        "char_candidates_score": [
+          [
+            0.999,
+            0
+          ],
+          [
+            0.999
+          ],
+          [
+            0.999
+          ]
+        ]
+      },
+      {
+        "text": "trunk",
+        "handwritten": 0,
+        "rotated_rect": [
+          74,
+          455,
+          39,
+          13,
+          0
+        ],
+        "char_candidates": [
+          [
+            "t"
+          ],
+          [
+            "r"
+          ],
+          [
+            "u",
+            "a"
+          ],
+          [
+            "n"
+          ],
+          [
+            "k"
+          ]
+        ],
+        "char_candidates_score": [
+          [
+            0.999
+          ],
+          [
+            0.999
+          ],
+          [
+            0.999,
+            0
+          ],
+          [
+            0.999
+          ],
+          [
+            0.999
+          ]
+        ]
+      },
+      {
+        "text": "up",
+        "handwritten": 0,
+        "rotated_rect": [
+          110,
+          457,
+          18,
+          13,
+          0
+        ],
+        "char_candidates": [
+          [
+            "u"
+          ],
+          [
+            "p"
+          ]
+        ],
+        "char_candidates_score": [
+          [
+            0.999
+          ],
+          [
+            0.999
+          ]
+        ]
+      },
+      {
+        "text": "out",
+        "handwritten": 0,
+        "rotated_rect": [
+          140,
+          455,
+          26,
+          11,
+          0
+        ],
+        "char_candidates": [
+          [
+            "o"
+          ],
+          [
+            "u"
+          ],
+          [
+            "t"
+          ]
+        ],
+        "char_candidates_score": [
+          [
+            0.999
+          ],
+          [
+            0.999
+          ],
+          [
+            0.999
+          ]
+        ]
+      },
+      {
+        "text": "of",
+        "handwritten": 0,
+        "rotated_rect": [
+          166,
+          454,
+          15,
+          14,
+          0
+        ],
+        "char_candidates": [
+          [
+            "o"
+          ],
+          [
+            "f"
+          ]
+        ],
+        "char_candidates_score": [
+          [
+            0.999
+          ],
+          [
+            0.999
+          ]
+        ]
+      },
+      {
+        "text": "the",
+        "handwritten": 0,
+        "rotated_rect": [
+          190,
+          455,
+          22,
+          13,
+          0
+        ],
+        "char_candidates": [
+          [
+            "t"
+          ],
+          [
+            "h"
+          ],
+          [
+            "e"
+          ]
+        ],
+        "char_candidates_score": [
+          [
+            0.999
+          ],
+          [
+            0.999
+          ],
+          [
+            0.999
+          ]
+        ]
+      },
+      {
+        "text": "water",
+        "handwritten": 0,
+        "rotated_rect": [
+          230,
+          455,
+          38,
+          9,
+          0
+        ],
+        "char_candidates": [
+          [
+            "w"
+          ],
+          [
+            "a"
+          ],
+          [
+            "t"
+          ],
+          [
+            "e"
+          ],
+          [
+            "r"
+          ]
+        ],
+        "char_candidates_score": [
+          [
+            0.999
+          ],
+          [
+            0.999
+          ],
+          [
+            0.999
+          ],
+          [
+            0.999
+          ],
+          [
+            0.999
+          ]
+        ]
+      },
+      {
+        "text": "to",
+        "handwritten": 0,
+        "rotated_rect": [
+          262,
+          455,
+          15,
+          11,
+          0
+        ],
+        "char_candidates": [
+          [
+            "t"
+          ],
+          [
+            "o"
+          ]
+        ],
+        "char_candidates_score": [
+          [
+            0.999
+          ],
+          [
+            0.999
+          ]
+        ]
+      },
+      {
+        "text": "breathe.",
+        "handwritten": 0,
+        "rotated_rect": [
+          308,
+          456,
+          61,
+          13,
+          0
+        ],
+        "char_candidates": [
+          [
+            "b"
+          ],
+          [
+            "r"
+          ],
+          [
+            "e"
+          ],
+          [
+            "a"
+          ],
+          [
+            "t"
+          ],
+          [
+            "h"
+          ],
+          [
+            "e"
+          ],
+          [
+            "."
+          ]
+        ],
+        "char_candidates_score": [
+          [
+            0.999
+          ],
+          [
+            0.999
+          ],
+          [
+            0.999
+          ],
+          [
+            0.999
+          ],
+          [
+            0.999
+          ],
+          [
+            0.999
+          ],
+          [
+            0.999
+          ],
+          [
+            0.999
+          ]
+        ]
+      }
+    ]
+  }
+}

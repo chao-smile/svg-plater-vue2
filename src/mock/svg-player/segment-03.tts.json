@@ -1,0 +1,171 @@
+{
+  "header": {
+    "namespace": "SpeechLongSynthesizer",
+    "name": "MetaInfo",
+    "status": 20000000,
+    "message_id": "3b52723b3ad140869eb0a759b5287431",
+    "task_id": "d898f0ebcfbe45b6b86b12e62ce68f01",
+    "status_text": "Gateway:SUCCESS:Success.",
+    "segment_id": "segment-03",
+    "segment_global_begin_time": 25328,
+    "segment_global_end_time": 29657,
+    "segment_word_index_range": [
+      77,
+      91
+    ]
+  },
+  "payload": {
+    "subtitles": [
+      {
+        "text": "An",
+        "phoneme": "ae n",
+        "sentence": false,
+        "begin_index": 0,
+        "end_index": 1,
+        "begin_time": 0,
+        "end_time": 160,
+        "phoneme_list": []
+      },
+      {
+        "text": "elephant",
+        "phoneme": "eh l ah f ah n t",
+        "sentence": false,
+        "begin_index": 1,
+        "end_index": 2,
+        "begin_time": 160,
+        "end_time": 740,
+        "phoneme_list": []
+      },
+      {
+        "text": "that",
+        "phoneme": "dh ae t",
+        "sentence": false,
+        "begin_index": 2,
+        "end_index": 3,
+        "begin_time": 740,
+        "end_time": 870,
+        "phoneme_list": []
+      },
+      {
+        "text": "is",
+        "phoneme": "ih z",
+        "sentence": false,
+        "begin_index": 3,
+        "end_index": 4,
+        "begin_time": 870,
+        "end_time": 990,
+        "phoneme_list": []
+      },
+      {
+        "text": "underwater",
+        "phoneme": "ah n d er w ao t er",
+        "sentence": false,
+        "begin_index": 4,
+        "end_index": 5,
+        "begin_time": 990,
+        "end_time": 1730,
+        "phoneme_list": []
+      },
+      {
+        "text": "pokes",
+        "phoneme": "p ow k s",
+        "sentence": false,
+        "begin_index": 5,
+        "end_index": 6,
+        "begin_time": 1980,
+        "end_time": 2310,
+        "phoneme_list": []
+      },
+      {
+        "text": "its",
+        "phoneme": "ih t s",
+        "sentence": false,
+        "begin_index": 6,
+        "end_index": 7,
+        "begin_time": 2310,
+        "end_time": 2480,
+        "phoneme_list": []
+      },
+      {
+        "text": "trunk",
+        "phoneme": "t r ah ng k",
+        "sentence": false,
+        "begin_index": 7,
+        "end_index": 8,
+        "begin_time": 2480,
+        "end_time": 2750,
+        "phoneme_list": []
+      },
+      {
+        "text": "up",
+        "phoneme": "ah p",
+        "sentence": false,
+        "begin_index": 8,
+        "end_index": 9,
+        "begin_time": 2750,
+        "end_time": 2930,
+        "phoneme_list": []
+      },
+      {
+        "text": "out",
+        "phoneme": "aw t",
+        "sentence": false,
+        "begin_index": 9,
+        "end_index": 10,
+        "begin_time": 2930,
+        "end_time": 3120,
+        "phoneme_list": []
+      },
+      {
+        "text": "of",
+        "phoneme": "ah v",
+        "sentence": false,
+        "begin_index": 10,
+        "end_index": 11,
+        "begin_time": 3120,
+        "end_time": 3230,
+        "phoneme_list": []
+      },
+      {
+        "text": "the",
+        "phoneme": "dh ah",
+        "sentence": false,
+        "begin_index": 11,
+        "end_index": 12,
+        "begin_time": 3230,
+        "end_time": 3310,
+        "phoneme_list": []
+      },
+      {
+        "text": "water",
+        "phoneme": "w ao t er",
+        "sentence": false,
+        "begin_index": 12,
+        "end_index": 13,
+        "begin_time": 3310,
+        "end_time": 3700,
+        "phoneme_list": []
+      },
+      {
+        "text": "to",
+        "phoneme": "t ah",
+        "sentence": false,
+        "begin_index": 13,
+        "end_index": 14,
+        "begin_time": 3700,
+        "end_time": 3840,
+        "phoneme_list": []
+      },
+      {
+        "text": "breathe",
+        "phoneme": "b r iy dh",
+        "sentence": false,
+        "begin_index": 14,
+        "end_index": 15,
+        "begin_time": 3840,
+        "end_time": 4329,
+        "phoneme_list": []
+      }
+    ]
+  }
+}

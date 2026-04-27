@@ -1,0 +1,111 @@
+{
+  "header": {
+    "namespace": "SpeechLongSynthesizer",
+    "name": "MetaInfo",
+    "status": 20000000,
+    "message_id": "3b52723b3ad140869eb0a759b5287431",
+    "task_id": "d898f0ebcfbe45b6b86b12e62ce68f01",
+    "status_text": "Gateway:SUCCESS:Success.",
+    "segment_id": "segment-02",
+    "segment_global_begin_time": 21837,
+    "segment_global_end_time": 24878,
+    "segment_word_index_range": [
+      68,
+      76
+    ]
+  },
+  "payload": {
+    "subtitles": [
+      {
+        "text": "nose",
+        "phoneme": "n ow z",
+        "sentence": false,
+        "begin_index": 0,
+        "end_index": 1,
+        "begin_time": 0,
+        "end_time": 531,
+        "phoneme_list": []
+      },
+      {
+        "text": "or",
+        "phoneme": "ao r",
+        "sentence": false,
+        "begin_index": 1,
+        "end_index": 2,
+        "begin_time": 641,
+        "end_time": 781,
+        "phoneme_list": []
+      },
+      {
+        "text": "trunk",
+        "phoneme": "t r ah ng k",
+        "sentence": false,
+        "begin_index": 2,
+        "end_index": 3,
+        "begin_time": 781,
+        "end_time": 1271,
+        "phoneme_list": []
+      },
+      {
+        "text": "is",
+        "phoneme": "ih z",
+        "sentence": false,
+        "begin_index": 3,
+        "end_index": 4,
+        "begin_time": 1341,
+        "end_time": 1521,
+        "phoneme_list": []
+      },
+      {
+        "text": "like",
+        "phoneme": "l ay k",
+        "sentence": false,
+        "begin_index": 4,
+        "end_index": 5,
+        "begin_time": 1521,
+        "end_time": 1730,
+        "phoneme_list": []
+      },
+      {
+        "text": "a",
+        "phoneme": "ah",
+        "sentence": false,
+        "begin_index": 5,
+        "end_index": 6,
+        "begin_time": 1730,
+        "end_time": 1791,
+        "phoneme_list": []
+      },
+      {
+        "text": "long",
+        "phoneme": "l ao ng",
+        "sentence": false,
+        "begin_index": 6,
+        "end_index": 7,
+        "begin_time": 1791,
+        "end_time": 2121,
+        "phoneme_list": []
+      },
+      {
+        "text": "water",
+        "phoneme": "w ao t er",
+        "sentence": false,
+        "begin_index": 7,
+        "end_index": 8,
+        "begin_time": 2121,
+        "end_time": 2461,
+        "phoneme_list": []
+      },
+      {
+        "text": "hose",
+        "phoneme": "hh ow z",
+        "sentence": false,
+        "begin_index": 8,
+        "end_index": 9,
+        "begin_time": 2461,
+        "end_time": 3041,
+        "phoneme_list": []
+      }
+    ]
+  }
+}

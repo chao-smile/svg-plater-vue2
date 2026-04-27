@@ -1,0 +1,348 @@
+{
+  "code": 200,
+  "data": {
+    "width": 1235,
+    "height": 774,
+    "words": [
+      {
+        "text": "nose,",
+        "handwritten": 0,
+        "rotated_rect": [
+          76,
+          407,
+          40,
+          11,
+          0
+        ],
+        "char_candidates": [
+          [
+            "n"
+          ],
+          [
+            "o"
+          ],
+          [
+            "s"
+          ],
+          [
+            "e"
+          ],
+          [
+            ","
+          ]
+        ],
+        "char_candidates_score": [
+          [
+            0.999
+          ],
+          [
+            0.999
+          ],
+          [
+            1
+          ],
+          [
+            0.999
+          ],
+          [
+            0.999
+          ]
+        ]
+      },
+      {
+        "text": "or",
+        "handwritten": 0,
+        "rotated_rect": [
+          107,
+          406,
+          13,
+          9,
+          0
+        ],
+        "char_candidates": [
+          [
+            "o"
+          ],
+          [
+            "r"
+          ]
+        ],
+        "char_candidates_score": [
+          [
+            0.999
+          ],
+          [
+            0.999
+          ]
+        ]
+      },
+      {
+        "text": "trunk,",
+        "handwritten": 0,
+        "rotated_rect": [
+          143,
+          408,
+          42,
+          11,
+          0
+        ],
+        "char_candidates": [
+          [
+            "t"
+          ],
+          [
+            "r"
+          ],
+          [
+            "u"
+          ],
+          [
+            "n"
+          ],
+          [
+            "k"
+          ],
+          [
+            ","
+          ]
+        ],
+        "char_candidates_score": [
+          [
+            0.999
+          ],
+          [
+            0.999
+          ],
+          [
+            0.999
+          ],
+          [
+            0.999
+          ],
+          [
+            0.999
+          ],
+          [
+            0.999
+          ]
+        ]
+      },
+      {
+        "text": "is",
+        "handwritten": 0,
+        "rotated_rect": [
+          175,
+          405,
+          9,
+          13,
+          0
+        ],
+        "char_candidates": [
+          [
+            "i"
+          ],
+          [
+            "s"
+          ]
+        ],
+        "char_candidates_score": [
+          [
+            0.999
+          ],
+          [
+            0.999
+          ]
+        ]
+      },
+      {
+        "text": "like",
+        "handwritten": 0,
+        "rotated_rect": [
+          198,
+          404,
+          23,
+          12,
+          0
+        ],
+        "char_candidates": [
+          [
+            "l"
+          ],
+          [
+            "i"
+          ],
+          [
+            "k"
+          ],
+          [
+            "e"
+          ]
+        ],
+        "char_candidates_score": [
+          [
+            0.999
+          ],
+          [
+            0.999
+          ],
+          [
+            0.999
+          ],
+          [
+            0.999
+          ]
+        ]
+      },
+      {
+        "text": "a",
+        "handwritten": 0,
+        "rotated_rect": [
+          221,
+          406,
+          7,
+          8,
+          0
+        ],
+        "char_candidates": [
+          [
+            "a"
+          ]
+        ],
+        "char_candidates_score": [
+          [
+            0.999
+          ]
+        ]
+      },
+      {
+        "text": "long",
+        "handwritten": 0,
+        "rotated_rect": [
+          247,
+          405,
+          30,
+          15,
+          0
+        ],
+        "char_candidates": [
+          [
+            "l"
+          ],
+          [
+            "o"
+          ],
+          [
+            "n"
+          ],
+          [
+            "g"
+          ]
+        ],
+        "char_candidates_score": [
+          [
+            0.999
+          ],
+          [
+            0.999
+          ],
+          [
+            0.999
+          ],
+          [
+            0.999
+          ]
+        ]
+      },
+      {
+        "text": "water",
+        "handwritten": 0,
+        "rotated_rect": [
+          291,
+          406,
+          39,
+          10,
+          0
+        ],
+        "char_candidates": [
+          [
+            "w"
+          ],
+          [
+            "a"
+          ],
+          [
+            "t"
+          ],
+          [
+            "e"
+          ],
+          [
+            "r"
+          ]
+        ],
+        "char_candidates_score": [
+          [
+            0.999
+          ],
+          [
+            0.999
+          ],
+          [
+            0.999
+          ],
+          [
+            0.999
+          ],
+          [
+            0.999
+          ]
+        ]
+      },
+      {
+        "text": "hose.",
+        "handwritten": 0,
+        "rotated_rect": [
+          336,
+          407,
+          37,
+          13,
+          0
+        ],
+        "char_candidates": [
+          [
+            "h"
+          ],
+          [
+            "o"
+          ],
+          [
+            "s"
+          ],
+          [
+            "e"
+          ],
+          [
+            "."
+          ]
+        ],
+        "char_candidates_score": [
+          [
+            0.999
+          ],
+          [
+            0.999
+          ],
+          [
+            0.999
+          ],
+          [
+            0.999
+          ],
+          [
+            0.999
+          ]
+        ]
+      }
+    ]
+  }
+}
