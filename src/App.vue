@@ -87,16 +87,48 @@
       </div>
 
       <div v-if="segmentAssets.length" class="segment-actions">
-        <button
+        <div
           v-for="(item, index) in segmentAssets"
           :key="item.id == null ? index : item.id"
-          :disabled="!canPlaySegment"
-          class="secondary"
-          :title="item.text"
-          @click="handleSegmentButton(index)"
+          class="segment-control"
         >
-          播放第 {{ index + 1 }} 段
-        </button>
+          <button
+            class="segment-play-button"
+            :disabled="!canPlaySegment"
+            :aria-label="segmentButtonLabel(index)"
+            :title="item.text"
+            @click="handleSegmentTransportButton(index)"
+          >
+            <span
+              class="transport-icon"
+              :class="{ pause: isSegmentPlaying(index) }"
+              aria-hidden="true"
+            />
+            <span>{{ segmentButtonLabel(index) }}</span>
+          </button>
+          <div class="progress-control">
+            <input
+              class="progress-range"
+              type="range"
+              min="0"
+              max="1000"
+              step="1"
+              :value="segmentProgressValue(index)"
+              :disabled="!canPlaySegment"
+              :aria-valuetext="segmentProgressAriaText(index)"
+              :aria-label="`第 ${index + 1} 段音频进度`"
+              @pointerdown="handleSegmentScrubStart(index)"
+              @pointerup="handleSegmentScrubEnd"
+              @pointercancel="handleSegmentScrubCancel"
+              @input="handleSegmentProgressInput(index, $event)"
+              @change="handleSegmentScrubEnd"
+            />
+            <div class="progress-meta">
+              <span>{{ segmentProgressTimeText(index) }}</span>
+              <span class="segment-title">{{ item.text }}</span>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div v-if="loading">加载 manifest 中...</div>
@@ -118,6 +150,7 @@
         :playback-rate="playbackRate"
         @finished="onPlayerFinished"
         @state-change="onPlayerStateChange"
+        @progress-change="onPlayerProgressChange"
       />
     </section>
 
@@ -144,6 +177,7 @@ import type {
   PlayerState,
   SegmentAsset,
   SvgSequencePlayerExpose,
+  SvgSequencePlayerProgress,
 } from "./components/svg-sequence-player";
 import {
   SVG_PLAYER_DATA_ROOT,
@@ -183,6 +217,11 @@ const playbackRateOptions = [1, 1.25, 1.5, 2] as const;
 const playbackRate = ref<number>(playbackRateOptions[0]);
 const displayMode = ref<"image" | "text">("image");
 const activePlayer = computed(() => playerRef.value);
+const progressInfo = ref<SvgSequencePlayerProgress | null>(null);
+const segmentProgressValues = ref<Record<number, number>>({});
+const scrubbingSegmentIndex = ref<number | null>(null);
+const scrubWasPlaying = ref(false);
+let lastSeekPromise: Promise<void> | null = null;
 
 function cloneSegmentAssets(assets: SegmentAsset[]): SegmentAsset[] {
   return assets.map((asset) => ({
@@ -200,6 +239,10 @@ function applyDemoDataset(dataset: DemoDataset) {
   activePlayer.value?.stop();
   finishedAt.value = "";
   asyncDemoStatus.value = "未触发";
+  progressInfo.value = null;
+  segmentProgressValues.value = {};
+  scrubbingSegmentIndex.value = null;
+  scrubWasPlaying.value = false;
   currentDataset.value = dataset;
 
   if (dataset === "longText") {
@@ -271,6 +314,10 @@ async function handleAsyncLoadAndPlayDemo() {
   const token = asyncDemoToken;
   activePlayer.value?.stop();
   finishedAt.value = "";
+  progressInfo.value = null;
+  segmentProgressValues.value = {};
+  scrubbingSegmentIndex.value = null;
+  scrubWasPlaying.value = false;
   currentDataset.value = "longText";
   imageUrl.value = SVG_PLAYER_LONG_TEXT_IMAGE_URL;
   sourceImageWidth.value = SVG_PLAYER_LONG_TEXT_IMAGE_WIDTH;
@@ -290,9 +337,80 @@ async function handleAsyncLoadAndPlayDemo() {
   asyncDemoStatus.value = "playSegment(0) 调用完成";
 }
 
-async function handleSegmentButton(index: number) {
+function isSegmentActive(index: number) {
+  return progressInfo.value?.segmentIndex === index;
+}
+
+function isSegmentPlaying(index: number) {
+  return isSegmentActive(index) && playerState.value === "playing";
+}
+
+function segmentProgressValue(index: number) {
+  return segmentProgressValues.value[index] ?? 0;
+}
+
+function setSegmentProgressValue(index: number, value: number) {
+  segmentProgressValues.value = {
+    ...segmentProgressValues.value,
+    [index]: Math.max(0, Math.min(1000, value)),
+  };
+}
+
+async function handleSegmentTransportButton(index: number) {
+  const player = activePlayer.value;
+  if (!player) return;
+
+  if (isSegmentActive(index) && playerState.value === "playing") {
+    player.pause();
+    return;
+  }
+
+  if (isSegmentActive(index) && playerState.value === "paused") {
+    await player.resume();
+    return;
+  }
+
+  const progress = segmentProgressValue(index);
+  if (progress > 0 && progress < 1000) {
+    await player.seekSegmentToProgress(index, progress / 1000);
+    await player.resume();
+    return;
+  }
+
+  if (progress >= 1000) setSegmentProgressValue(index, 0);
   finishedAt.value = "";
-  await activePlayer.value?.playSegment(index);
+  await player.playSegment(index);
+}
+
+function handleSegmentScrubStart(index: number) {
+  if (!canPlaySegment.value) return;
+  scrubbingSegmentIndex.value = index;
+  scrubWasPlaying.value = isSegmentActive(index) && playerState.value === "playing";
+  if (scrubWasPlaying.value) activePlayer.value?.pause();
+}
+
+function handleSegmentProgressInput(index: number, event: Event) {
+  const input = event.target as HTMLInputElement | null;
+  const value = Number(input?.value ?? 0);
+  setSegmentProgressValue(index, value);
+  lastSeekPromise =
+    activePlayer.value?.seekSegmentToProgress(index, segmentProgressValue(index) / 1000) ??
+    null;
+}
+
+async function handleSegmentScrubEnd() {
+  if (scrubbingSegmentIndex.value == null) return;
+  scrubbingSegmentIndex.value = null;
+  await lastSeekPromise;
+  if (scrubWasPlaying.value) {
+    await activePlayer.value?.resume();
+  }
+  scrubWasPlaying.value = false;
+}
+
+function handleSegmentScrubCancel() {
+  scrubbingSegmentIndex.value = null;
+  scrubWasPlaying.value = false;
 }
 
 // 由组件抛出的事件回填到 demo 状态栏。
@@ -304,6 +422,28 @@ function onPlayerFinished() {
 function onPlayerStateChange(state: PlayerState) {
   console.log("Player state changed:", state);
   playerState.value = state;
+}
+
+function onPlayerProgressChange(progress: SvgSequencePlayerProgress) {
+  progressInfo.value = progress;
+  if (
+    progress.segmentIndex >= 0 &&
+    scrubbingSegmentIndex.value !== progress.segmentIndex
+  ) {
+    const segmentProgress =
+      progress.segmentDurationMs > 0
+        ? progress.segmentTimeMs / progress.segmentDurationMs
+        : 0;
+    setSegmentProgressValue(progress.segmentIndex, Math.round(segmentProgress * 1000));
+  }
+}
+
+function formatMs(ms: number) {
+  const safeMs = Math.max(0, Number.isFinite(ms) ? ms : 0);
+  const totalSeconds = Math.floor(safeMs / 1000);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = String(totalSeconds % 60).padStart(2, "0");
+  return `${minutes}:${seconds}`;
 }
 
 const mainButtonText = computed(() => {
@@ -357,6 +497,26 @@ const toggleDatasetButtonText = computed(() =>
     ? "切换到长文本 mock"
     : "切换到原有 mock",
 );
+function segmentButtonLabel(index: number) {
+  if (isSegmentActive(index) && playerState.value === "playing")
+    return `暂停第 ${index + 1} 段`;
+  return `播放第 ${index + 1} 段`;
+}
+
+function segmentDurationMs(index: number) {
+  return segmentRows.value[index]?.durationMs ?? 0;
+}
+
+function segmentProgressTimeText(index: number) {
+  const duration = segmentDurationMs(index);
+  const current = duration * (segmentProgressValue(index) / 1000);
+  return `${formatMs(current)} / ${formatMs(duration)}`;
+}
+
+function segmentProgressAriaText(index: number) {
+  const percent = Math.round(segmentProgressValue(index) / 10);
+  return `第 ${index + 1} 段，${segmentProgressTimeText(index)}，${percent}%`;
+}
 const playerPropsData = computed(() => ({
   imageUrl: imageUrl.value,
   segmentAssets: segmentAssets.value,
@@ -461,9 +621,109 @@ onMounted(async () => {
 }
 
 .segment-actions {
-  display: flex;
+  display: grid;
+  gap: 10px;
+}
+
+.segment-control {
+  display: grid;
+  grid-template-columns: minmax(138px, auto) minmax(240px, 1fr);
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid #dbe3ee;
+  border-radius: 8px;
+  background: #f8fafc;
+}
+
+.segment-play-button {
+  min-height: 44px;
+  min-width: 138px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   gap: 8px;
-  flex-wrap: wrap;
+  font-weight: 700;
+  background: #111827;
+  color: #ffffff;
+  border-color: #111827;
+}
+
+.segment-play-button:disabled {
+  background: #9ca3af;
+  border-color: #9ca3af;
+}
+
+.transport-icon {
+  position: relative;
+  width: 14px;
+  height: 14px;
+  flex: 0 0 14px;
+}
+
+.transport-icon::before {
+  content: "";
+  position: absolute;
+  left: 3px;
+  top: 1px;
+  width: 0;
+  height: 0;
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+  border-left: 9px solid currentColor;
+}
+
+.transport-icon.pause::before,
+.transport-icon.pause::after {
+  content: "";
+  position: absolute;
+  top: 1px;
+  width: 4px;
+  height: 12px;
+  border: 0;
+  background: currentColor;
+}
+
+.transport-icon.pause::before {
+  left: 2px;
+}
+
+.transport-icon.pause::after {
+  right: 2px;
+}
+
+.progress-control {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.progress-range {
+  width: 100%;
+  min-height: 32px;
+  margin: 0;
+  cursor: pointer;
+  accent-color: #2563eb;
+}
+
+.progress-range:disabled {
+  cursor: not-allowed;
+}
+
+.progress-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: #4b5563;
+  font-size: 12px;
+}
+
+.segment-title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: right;
 }
 
 .prop-demo {
@@ -537,6 +797,14 @@ button.secondary {
   .segment-row {
     grid-template-columns: 1fr;
     gap: 4px;
+  }
+
+  .segment-control {
+    grid-template-columns: 1fr;
+  }
+
+  .segment-play-button {
+    width: 100%;
   }
 }
 </style>

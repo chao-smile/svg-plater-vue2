@@ -108,6 +108,17 @@ export type SegmentAsset = {
 
 export type PlayerState = "loading" | "idle" | "playing" | "paused" | "error";
 
+export type SvgSequencePlayerProgress = {
+  segmentIndex: number;
+  segmentId: string | null;
+  segmentCount: number;
+  currentTimeMs: number;
+  durationMs: number;
+  segmentTimeMs: number;
+  segmentDurationMs: number;
+  progress: number;
+};
+
 export type SvgSequencePlayerExpose = {
   playAll: () => Promise<void>;
   playSegment: (index: number) => Promise<void>;
@@ -116,4 +127,7 @@ export type SvgSequencePlayerExpose = {
   togglePause: () => void;
   stop: () => void;
   getState: () => PlayerState;
+  getProgress: () => SvgSequencePlayerProgress;
+  seekToProgress: (progress: number) => Promise<void>;
+  seekSegmentToProgress: (index: number, progress: number) => Promise<void>;
 };

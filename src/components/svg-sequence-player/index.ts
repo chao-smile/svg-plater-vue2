@@ -5,6 +5,7 @@ export type {
   PlayerState,
   SegmentAsset,
   SegmentManifest,
+  SvgSequencePlayerProgress,
   SvgSequencePlayerExpose,
   ManifestSegment,
   SegmentModel,

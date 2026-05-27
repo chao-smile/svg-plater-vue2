@@ -124,9 +124,11 @@ import type {
   SegmentAsset,
   SegmentModel,
   SvgSequencePlayerExpose,
+  SvgSequencePlayerProgress,
 } from "./types";
 
 type DisplayMode = "image" | "text";
+type PlaybackScope = "all" | "single";
 type TextWordProgressCue = {
   id: string;
   t0: number;
@@ -175,6 +177,7 @@ const props = withDefaults(
 const emit = defineEmits<{
   (e: "finished"): void;
   (e: "state-change", state: PlayerState): void;
+  (e: "progress-change", progress: SvgSequencePlayerProgress): void;
 }>();
 
 // 播放器当前状态（loading/idle/playing/paused/error）。
@@ -236,6 +239,8 @@ let prevPlaybackRate = NaN;
 let prevDisplayMode: DisplayMode | null = null;
 // 上一次自动跟随开关快照。
 let prevAutoFollowText: boolean | null = null;
+// 当前播放范围：顺序播放全部，或只播放单个分段。
+let playbackScope: PlaybackScope | null = null;
 
 // 更新并广播播放器状态，避免重复派发相同状态。
 function setState(next: PlayerState) {
@@ -290,6 +295,105 @@ function settleSegment(ok: boolean) {
   const fn = resolveSegment;
   resolveSegment = null;
   fn(ok);
+}
+
+function clamp(value: number, min: number, max: number) {
+  return Math.max(min, Math.min(max, value));
+}
+
+function segmentDuration(segment: SegmentModel | undefined) {
+  if (!segment) return 0;
+  return Math.max(0, segment.t1 - segment.t0);
+}
+
+function totalDuration() {
+  return segments.value.reduce((sum, segment) => sum + segmentDuration(segment), 0);
+}
+
+function elapsedBeforeSegment(index: number) {
+  return segments.value
+    .slice(0, Math.max(0, index))
+    .reduce((sum, segment) => sum + segmentDuration(segment), 0);
+}
+
+function buildProgressPayload(): SvgSequencePlayerProgress {
+  const activeIndex = currentSegmentIndex.value;
+  const segment = segments.value[activeIndex];
+  const durationMs = totalDuration();
+  if (!segment) {
+    return {
+      segmentIndex: -1,
+      segmentId: null,
+      segmentCount: segments.value.length,
+      currentTimeMs: 0,
+      durationMs,
+      segmentTimeMs: 0,
+      segmentDurationMs: 0,
+      progress: 0,
+    };
+  }
+
+  const segmentDurationMs = segmentDuration(segment);
+  const segmentTimeMs = clamp(currentTimeMs.value - segment.t0, 0, segmentDurationMs);
+  const totalTimeMs = clamp(
+    elapsedBeforeSegment(activeIndex) + segmentTimeMs,
+    0,
+    durationMs,
+  );
+
+  return {
+    segmentIndex: activeIndex,
+    segmentId: segment.id,
+    segmentCount: segments.value.length,
+    currentTimeMs: totalTimeMs,
+    durationMs,
+    segmentTimeMs,
+    segmentDurationMs,
+    progress: durationMs > 0 ? clamp(totalTimeMs / durationMs, 0, 1) : 0,
+  };
+}
+
+function emitProgressChange() {
+  emit("progress-change", buildProgressPayload());
+}
+
+function resolvePositionByProgress(progress: number) {
+  const durationMs = totalDuration();
+  const safeProgress = clamp(Number.isFinite(progress) ? progress : 0, 0, 1);
+  if (!segments.value.length || durationMs <= 0) {
+    return { index: -1, timeMs: 0 };
+  }
+
+  let elapsed = safeProgress * durationMs;
+  for (let index = 0; index < segments.value.length; index += 1) {
+    const segment = segments.value[index]!;
+    const duration = segmentDuration(segment);
+    if (elapsed <= duration || index === segments.value.length - 1) {
+      return {
+        index,
+        timeMs: clamp(segment.t0 + elapsed, segment.t0, segment.t1),
+      };
+    }
+    elapsed -= duration;
+  }
+
+  const lastIndex = segments.value.length - 1;
+  const last = segments.value[lastIndex]!;
+  return { index: lastIndex, timeMs: last.t1 };
+}
+
+function renderSegmentProgressAt(index: number, timeMs: number) {
+  const segment = segments.value[index];
+  if (!segment) return;
+  resetAllProgress();
+  currentSegmentIndex.value = index;
+  currentTimeMs.value = clamp(timeMs, segment.t0, segment.t1);
+  lastRenderedSegmentIndex = index;
+  for (const run of segment.runs) {
+    setRunProgress(run.id, computeRunProgress(run, currentTimeMs.value));
+  }
+  syncTextFollowOnPlayback();
+  emitProgressChange();
 }
 
 // 获取当前活跃分段 id（无活跃分段时返回 null）。
@@ -354,13 +458,13 @@ function tick() {
 
   const tMs = audio.currentTime * 1000;
   currentTimeMs.value = tMs;
-  // 按当前音频时间推进每一行 run 的高亮进度，保证只增不减。
+  // 按当前音频时间推进每一行 run 的高亮进度，拖拽回退时也能精确同步。
   for (const run of active.runs) {
     const next = computeRunProgress(run, tMs);
-    const prev = runProgress[run.id] ?? 0;
-    setRunProgress(run.id, Math.max(prev, next));
+    setRunProgress(run.id, next);
   }
   syncTextFollowOnPlayback();
+  emitProgressChange();
 
   if (stopAtMs != null && tMs >= stopAtMs) {
     for (const run of active.runs) setRunProgress(run.id, 1);
@@ -397,21 +501,19 @@ function seekToMs(ms: number, token: number) {
   });
 }
 
-// 内部播放单个分段并返回是否成功完成，由连续播放和对外单段播放共同复用。
-async function playSegmentInternal(index: number, token: number): Promise<boolean> {
+async function prepareSegmentAtPosition(
+  index: number,
+  timeMs: number,
+  token: number,
+): Promise<boolean> {
   const segment = segments.value[index];
   if (!segment) return false;
 
   if (lastRenderedSegmentIndex >= 0 && lastRenderedSegmentIndex !== index) {
     resetSegmentRunProgress(lastRenderedSegmentIndex);
   }
-  lastRenderedSegmentIndex = index;
-  currentSegmentIndex.value = index;
-  currentTimeMs.value = segment.t0;
   stopAtMs = segment.t1;
-  // 每个分段开播前先把首句“无动画居中”，避免刚播放就先滚一下。
-  centerActiveTextLine("auto", true);
-  syncCenteredLineMarker();
+  renderSegmentProgressAt(index, timeMs);
 
   if (audio.src !== segment.audioUrl) {
     audio.src = segment.audioUrl;
@@ -421,9 +523,38 @@ async function playSegmentInternal(index: number, token: number): Promise<boolea
 
   try {
     applyPlaybackRate(effectivePlaybackRate.value);
-    await seekToMs(segment.t0, token);
+    await seekToMs(clamp(timeMs, segment.t0, segment.t1), token);
     if (token !== sequenceToken) return false;
+    renderSegmentProgressAt(index, audio.currentTime * 1000);
+    // 每个分段开播前先把首句“无动画居中”，避免刚播放就先滚一下。
+    centerActiveTextLine("auto", true);
+    syncCenteredLineMarker();
+    return true;
+  } catch (e) {
+    if (String((e as Error)?.message ?? e) !== "stale") {
+      console.error(e);
+    }
+    return false;
+  }
+}
 
+// 内部播放单个分段并返回是否成功完成，由连续播放和对外单段播放共同复用。
+async function playSegmentInternal(
+  index: number,
+  token: number,
+  startAtMs?: number,
+): Promise<boolean> {
+  const segment = segments.value[index];
+  if (!segment) return false;
+
+  const prepared = await prepareSegmentAtPosition(
+    index,
+    startAtMs == null ? segment.t0 : startAtMs,
+    token,
+  );
+  if (!prepared || token !== sequenceToken) return false;
+
+  try {
     await audio.play();
     if (token !== sequenceToken) return false;
     applyPlaybackRate(effectivePlaybackRate.value);
@@ -453,6 +584,17 @@ async function playSegmentInternal(index: number, token: number): Promise<boolea
   });
 }
 
+function setCompletedPosition(index: number) {
+  const segment = segments.value[index];
+  if (!segment) {
+    currentSegmentIndex.value = -1;
+    currentTimeMs.value = 0;
+    emitProgressChange();
+    return;
+  }
+  renderSegmentProgressAt(index, segment.t1);
+}
+
 // 内部停止：中断当前流程并重置状态（可选择是否回到 idle/error）。
 function stopInternal(setIdleState = true) {
   sequenceToken += 1;
@@ -466,11 +608,12 @@ function stopInternal(setIdleState = true) {
   lastCenteredTextLineId = "";
   programmaticScrollLockUntil = 0;
   resetAllProgress();
+  emitProgressChange();
+  if (setIdleState) playbackScope = null;
   if (setIdleState) setState(errorText.value ? "error" : "idle");
 }
 
-// 串行播放全部 segments；若 token 变化说明被中断，立即退出。
-async function playAll() {
+async function playAllFromPosition(startIndex = 0, startAtMs?: number) {
   if (!(await waitForModelReady())) return;
   if (
     !segments.value.length ||
@@ -480,27 +623,32 @@ async function playAll() {
 
   stopInternal(false);
   resetAllProgress();
+  playbackScope = "all";
   setState("playing");
 
   sequenceToken += 1;
   const token = sequenceToken;
+  const firstIndex = clamp(Math.floor(startIndex), 0, segments.value.length - 1);
 
-  for (let i = 0; i < segments.value.length; i++) {
-    const ok = await playSegmentInternal(i, token);
+  for (let i = firstIndex; i < segments.value.length; i++) {
+    const ok = await playSegmentInternal(
+      i,
+      token,
+      i === firstIndex ? startAtMs : undefined,
+    );
     if (!ok || token !== sequenceToken) return;
   }
 
   audio.pause();
   stopRaf();
-  currentSegmentIndex.value = -1;
   lastRenderedSegmentIndex = -1;
-  currentTimeMs.value = 0;
+  setCompletedPosition(segments.value.length - 1);
+  playbackScope = null;
   setState("idle");
   emit("finished");
 }
 
-// 对外播放指定分段：保留完整数据源，只重置播放状态并定位到目标段。
-async function playSegment(index: number) {
+async function playSingleFromPosition(index: number, startAtMs?: number) {
   if (!(await waitForModelReady())) return;
   if (
     !segments.value[index] ||
@@ -510,19 +658,30 @@ async function playSegment(index: number) {
 
   stopInternal(false);
   resetAllProgress();
+  playbackScope = "single";
   setState("playing");
 
   sequenceToken += 1;
   const token = sequenceToken;
-  const ok = await playSegmentInternal(index, token);
+  const ok = await playSegmentInternal(index, token, startAtMs);
   if (!ok || token !== sequenceToken) return;
 
   audio.pause();
   stopRaf();
-  currentSegmentIndex.value = -1;
   lastRenderedSegmentIndex = -1;
-  currentTimeMs.value = 0;
+  setCompletedPosition(index);
+  playbackScope = null;
   setState("idle");
+}
+
+// 串行播放全部 segments；若 token 变化说明被中断，立即退出。
+async function playAll() {
+  await playAllFromPosition();
+}
+
+// 对外播放指定分段：保留完整数据源，只重置播放状态并定位到目标段。
+async function playSegment(index: number) {
+  await playSingleFromPosition(index);
 }
 
 // 暂停播放并保持当前进度。
@@ -535,7 +694,29 @@ function pause() {
 
 // 从暂停状态恢复播放。
 async function resume() {
+  if (playerState.value === "idle" && currentSegmentIndex.value >= 0) {
+    const scope = playbackScope ?? "all";
+    const index = currentSegmentIndex.value;
+    const timeMs = currentTimeMs.value;
+    if (scope === "single") {
+      void playSingleFromPosition(index, timeMs);
+    } else {
+      void playAllFromPosition(index, timeMs);
+    }
+    return;
+  }
   if (playerState.value !== "paused") return;
+  if (!resolveSegment && currentSegmentIndex.value >= 0) {
+    const scope = playbackScope ?? "all";
+    const index = currentSegmentIndex.value;
+    const timeMs = currentTimeMs.value;
+    if (scope === "single") {
+      void playSingleFromPosition(index, timeMs);
+    } else {
+      void playAllFromPosition(index, timeMs);
+    }
+    return;
+  }
   try {
     await audio.play();
     setState("playing");
@@ -560,6 +741,55 @@ function togglePause() {
 // 对外暴露的停止动作，结束当前播放并回到可重播状态。
 function stop() {
   stopInternal(true);
+}
+
+async function seekToProgress(progress: number) {
+  if (!(await waitForModelReady())) return;
+  const target = resolvePositionByProgress(progress);
+  if (target.index < 0) return;
+
+  const wasPlaying = playerState.value === "playing";
+  const wasPaused = playerState.value === "paused";
+  const scope = playbackScope ?? "all";
+
+  if (wasPlaying) {
+    if (scope === "single") {
+      void playSingleFromPosition(target.index, target.timeMs);
+    } else {
+      void playAllFromPosition(target.index, target.timeMs);
+    }
+    return;
+  }
+
+  stopInternal(false);
+  playbackScope = scope;
+  const token = sequenceToken;
+  const ok = await prepareSegmentAtPosition(target.index, target.timeMs, token);
+  if (!ok || token !== sequenceToken) return;
+  setState(wasPaused ? "paused" : "idle");
+}
+
+async function seekSegmentToProgress(index: number, progress: number) {
+  if (!(await waitForModelReady())) return;
+  const segment = segments.value[index];
+  if (!segment) return;
+
+  const safeProgress = clamp(Number.isFinite(progress) ? progress : 0, 0, 1);
+  const targetTimeMs = segment.t0 + segmentDuration(segment) * safeProgress;
+  const wasPlaying = playerState.value === "playing";
+  const wasPaused = playerState.value === "paused";
+
+  if (wasPlaying) {
+    void playSingleFromPosition(index, targetTimeMs);
+    return;
+  }
+
+  stopInternal(false);
+  playbackScope = "single";
+  const token = sequenceToken;
+  const ok = await prepareSegmentAtPosition(index, targetTimeMs, token);
+  if (!ok || token !== sequenceToken) return;
+  setState(wasPaused ? "paused" : "idle");
 }
 
 // 读取图片原始尺寸，作为坐标系基准。
@@ -608,6 +838,7 @@ async function loadModels(token: number): Promise<boolean> {
     imageHeight.value = loaded.imageHeight || imageHeightBase;
     segments.value = loaded.segments;
     resetAllProgress();
+    emitProgressChange();
     setState("idle");
     void nextTick(() => {
       if (displayMode.value === "text") {
@@ -1108,6 +1339,9 @@ defineExpose<SvgSequencePlayerExpose>({
   togglePause,
   stop,
   getState: () => playerState.value,
+  getProgress: buildProgressPayload,
+  seekToProgress,
+  seekSegmentToProgress,
 });
 </script>
 

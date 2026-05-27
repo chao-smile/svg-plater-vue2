@@ -34,11 +34,15 @@ npm run dev
     :playback-rate="1"
     @finished="handleFinished"
     @state-change="handleStateChange"
+    @progress-change="handleProgressChange"
   />
 
   <div class="actions">
     <button @click="playerRef?.playAll()">播放全部</button>
     <button @click="playerRef?.playSegment(0)">播放第 1 段</button>
+    <button @click="playerRef?.seekSegmentToProgress(0, 0.5)">
+      第 1 段跳到 50%
+    </button>
     <button @click="playerRef?.togglePause()">暂停 / 继续</button>
     <button @click="playerRef?.stop()">停止</button>
   </div>
@@ -51,6 +55,7 @@ import {
   type PlayerState,
   type SegmentAsset,
   type SvgSequencePlayerExpose,
+  type SvgSequencePlayerProgress,
 } from "./src/components/svg-sequence-player";
 
 const playerRef = ref<SvgSequencePlayerExpose | null>(null);
@@ -84,6 +89,10 @@ function handleFinished() {
 
 function handleStateChange(state: PlayerState) {
   console.log("播放器状态", state);
+}
+
+function handleProgressChange(progress: SvgSequencePlayerProgress) {
+  console.log("播放进度", progress);
 }
 </script>
 ```
@@ -144,6 +153,7 @@ type SegmentAsset = {
 | --- | --- | --- |
 | `finished` | 无 | 全部 segment 顺序播放完成后触发 |
 | `state-change` | `PlayerState` | 播放器状态变化时触发 |
+| `progress-change` | `SvgSequencePlayerProgress` | 播放、暂停、停止、拖拽 seek 或模型重建导致进度变化时触发 |
 
 `PlayerState` 可选值：
 
@@ -152,6 +162,19 @@ type SegmentAsset = {
 - `playing`
 - `paused`
 - `error`
+
+`SvgSequencePlayerProgress` 字段说明：
+
+| 字段 | 类型 | 说明 |
+| --- | --- | --- |
+| `segmentIndex` | `number` | 当前激活 segment 下标，未定位时为 `-1` |
+| `segmentId` | `string \| null` | 当前激活 segment 的 id，未定位时为 `null` |
+| `segmentCount` | `number` | 当前数据源中的 segment 总数 |
+| `currentTimeMs` | `number` | 按全部 segment 累计后的当前播放时间，单位毫秒 |
+| `durationMs` | `number` | 全部 segment 的累计总时长，单位毫秒 |
+| `segmentTimeMs` | `number` | 当前 segment 内部的播放时间，单位毫秒 |
+| `segmentDurationMs` | `number` | 当前 segment 的总时长，单位毫秒 |
+| `progress` | `number` | 全部 segment 维度的播放进度，范围 `0` 到 `1` |
 
 ## 暴露方法
 
@@ -166,21 +189,29 @@ type SegmentAsset = {
 | `togglePause()` | `void` | 在暂停与继续之间切换 |
 | `stop()` | `void` | 停止播放并回到可重播状态 |
 | `getState()` | `PlayerState` | 获取当前播放器状态 |
+| `getProgress()` | `SvgSequencePlayerProgress` | 获取当前播放器进度快照 |
+| `seekToProgress(progress)` | `Promise<void>` | 按全部 segment 的累计进度跳转，`progress` 范围为 `0` 到 `1` |
+| `seekSegmentToProgress(index, progress)` | `Promise<void>` | 按单个 segment 的进度跳转，`index` 从 `0` 开始，`progress` 范围为 `0` 到 `1` |
 
 示例：
 
 ```ts
 await playerRef.value?.playSegment(2); // 播放第 3 段
+await playerRef.value?.seekSegmentToProgress(2, 0.5); // 第 3 段跳到 50%
 ```
 
 `playSegment(index)` 不需要调用方重新裁剪或替换数据源。推荐一次性传入完整 `segmentAssets`，再通过该方法定位到具体段落播放。
+
+`seekToProgress(progress)` 适合做“全部音频合集”的总进度条；如果页面上需要每段独立播放和拖拽，请使用 `seekSegmentToProgress(index, progress)`，避免拖动某段时影响其他段的进度。
 
 ## Demo 操作说明
 
 当前 demo 页面包含几类操作：
 
 - `开始顺序播放`：按当前 `segmentAssets` 从第一段播放到最后一段
-- `播放第 N 段`：调用组件暴露的 `playSegment(index)`，只播放对应段
+- 每段独立控制条：每个 segment 都有自己的播放/暂停按钮和进度条
+- `播放第 N 段` / `暂停第 N 段`：调用组件暴露的 `playSegment(index)`、`pause()` 或 `resume()`，只控制对应段
+- 拖动第 N 段进度条：调用 `seekSegmentToProgress(index, progress)`，只调整该段音频进度，并同步图片高亮或纯文字高亮
 - `切换纯文字` / `切换图文`：在图片高亮模式和纯文字滚动模式之间切换
 - `切换到长文本 mock` / `切换到原有 mock`：在原有 5 段 mock 数据和新增的长文本单段 mock 数据之间交替切换，用来演示 `imageUrl`、图片尺寸和 `segmentAssets` 同时更新时组件会重新加载
 - `异步加载并立即播放`：先把 `segmentAssets` 置为空数组，再延迟写入长文本 mock 数据，并立刻调用 `playSegment(0)`，用来演示异步数据刚更新后立即播放的场景
