@@ -4,6 +4,7 @@ import type {
   SegmentManifest,
   TtsJson,
 } from "../components/svg-sequence-player";
+import kintsugiLongTextResourceJson from "./svg-player/kintsugi-long-text.resource.json";
 import longTextSegmentAssetsJson from "./svg-player/long-text.segment-assets.json";
 import manifestJson from "./svg-player/manifest.json";
 
@@ -45,6 +46,63 @@ function mergeOcrTts(ocr: OcrJson, tts: TtsJson): SegmentAsset["ocr_tts"] {
   });
 }
 
+type ResourceMockWord = {
+  text?: string;
+  rotated_rect?: number[];
+  begin_time?: number | string | null;
+  end_time?: number | string | null;
+};
+
+type ResourceMock = {
+  image_url?: string;
+  width?: number;
+  height?: number;
+  resource_list?: Array<{
+    text?: string;
+    audio_url?: string;
+    ocr_tts?: ResourceMockWord[];
+  }>;
+};
+
+const KINTSUGI_LONG_TEXT_FALLBACK_DURATIONS_MS = [23576];
+
+function normalizeRemoteUrl(url: unknown): string {
+  return String(url ?? "").replace(/^http:\/\//, "https://");
+}
+
+function toFiniteTime(value: unknown): number | null {
+  const time = Number(value);
+  return Number.isFinite(time) ? time : null;
+}
+
+function fallbackDurationMs(words: ResourceMockWord[], index: number): number {
+  return Math.max(1000, KINTSUGI_LONG_TEXT_FALLBACK_DURATIONS_MS[index] ?? words.length * 340);
+}
+
+function normalizeResourceWords(
+  words: ResourceMockWord[],
+  index: number,
+): SegmentAsset["ocr_tts"] {
+  const hasTimedWords = words.some(
+    (word) => toFiniteTime(word.begin_time) != null && toFiniteTime(word.end_time) != null,
+  );
+  const durationMs = hasTimedWords ? 0 : fallbackDurationMs(words, index);
+  const unitMs = words.length > 0 ? durationMs / words.length : 0;
+
+  return words.map((word, wordIndex) => {
+    const begin = toFiniteTime(word.begin_time);
+    const end = toFiniteTime(word.end_time);
+    return {
+      text: String(word.text ?? ""),
+      rotated_rect: Array.isArray(word.rotated_rect)
+        ? word.rotated_rect
+        : [0, 0, 1, 1, 0],
+      begin_time: begin ?? Math.round(wordIndex * unitMs),
+      end_time: end ?? Math.round((wordIndex + 1) * unitMs),
+    };
+  });
+}
+
 export const SVG_PLAYER_DATA_ROOT = "src/mock/svg-player";
 
 export const SVG_PLAYER_MANIFEST: SegmentManifest = manifest;
@@ -58,6 +116,16 @@ export const SVG_PLAYER_LONG_TEXT_IMAGE_URL =
   "https://vanthink-dev.oss-cn-qingdao.aliyuncs.com/19e4f2a313300a1abceb0def2ba942dd.png";
 export const SVG_PLAYER_LONG_TEXT_IMAGE_WIDTH = 1233;
 export const SVG_PLAYER_LONG_TEXT_IMAGE_HEIGHT = 779;
+
+const kintsugiLongTextResource = kintsugiLongTextResourceJson as ResourceMock;
+
+export const SVG_PLAYER_KINTSUGI_LONG_TEXT_IMAGE_URL = normalizeRemoteUrl(
+  kintsugiLongTextResource.image_url,
+);
+export const SVG_PLAYER_KINTSUGI_LONG_TEXT_IMAGE_WIDTH =
+  Number(kintsugiLongTextResource.width) || 1197;
+export const SVG_PLAYER_KINTSUGI_LONG_TEXT_IMAGE_HEIGHT =
+  Number(kintsugiLongTextResource.height) || 864;
 
 // SegmentAsset 是组件真正消费的数据结构：音频 URL + ocr_tts 单词时序数组。
 export const SVG_PLAYER_SEGMENT_ASSETS: SegmentAsset[] = SVG_PLAYER_MANIFEST.segments.map((segment) => ({
@@ -75,11 +143,21 @@ export const SVG_PLAYER_LONG_TEXT_SEGMENT_ASSETS: SegmentAsset[] = (
 ).map((asset) => ({
   ...asset,
   // Demo 页面可能部署在 HTTPS 下，统一把远程音频升级成 HTTPS，避免混合内容拦截。
-  audio_url: String(asset.audio_url ?? "").replace(/^http:\/\//, "https://"),
+  audio_url: normalizeRemoteUrl(asset.audio_url),
+}));
+
+export const SVG_PLAYER_KINTSUGI_LONG_TEXT_SEGMENT_ASSETS: SegmentAsset[] = (
+  kintsugiLongTextResource.resource_list ?? []
+).map((resource, index) => ({
+  id: `kintsugi-long-text-${index + 1}`,
+  text: String(resource.text ?? `Kintsugi long text ${index + 1}`),
+  audio_url: normalizeRemoteUrl(resource.audio_url),
+  ocr_tts: normalizeResourceWords(resource.ocr_tts ?? [], index),
 }));
 
 export const SVG_PLAYER_USED_MOCK_FILES = [
   SVG_PLAYER_MANIFEST.image,
   ...SVG_PLAYER_MANIFEST.segments.flatMap((segment) => [segment.audio, segment.ocr, segment.tts]),
   "long-text.segment-assets.json",
+  "kintsugi-long-text.resource.json",
 ];

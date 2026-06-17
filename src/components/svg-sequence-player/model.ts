@@ -24,14 +24,12 @@ function averageWordHeight(words: WordModel[]): number {
 // 计算图片模式的行效果框：宽度沿用整行并集，高度使用当前段全部词高平均值。
 function averageHeightBBox(words: WordModel[], height: number): BBox {
   const union = unionBBox(words);
-  const avgCenterY =
-    words.reduce((sum, word) => sum + word.bbox.y + word.bbox.h / 2, 0) /
-    Math.max(1, words.length);
+  const centerY = union.y + union.h / 2;
   const safeHeight = Math.max(1, height);
 
   return {
     x: union.x,
-    y: avgCenterY - safeHeight / 2,
+    y: centerY - safeHeight / 2,
     w: union.w,
     h: safeHeight,
   };

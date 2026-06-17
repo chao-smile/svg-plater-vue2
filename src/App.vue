@@ -184,6 +184,10 @@ import {
   SVG_PLAYER_IMAGE_HEIGHT,
   SVG_PLAYER_IMAGE_URL,
   SVG_PLAYER_IMAGE_WIDTH,
+  SVG_PLAYER_KINTSUGI_LONG_TEXT_IMAGE_HEIGHT,
+  SVG_PLAYER_KINTSUGI_LONG_TEXT_IMAGE_URL,
+  SVG_PLAYER_KINTSUGI_LONG_TEXT_IMAGE_WIDTH,
+  SVG_PLAYER_KINTSUGI_LONG_TEXT_SEGMENT_ASSETS,
   SVG_PLAYER_LONG_TEXT_IMAGE_HEIGHT,
   SVG_PLAYER_LONG_TEXT_IMAGE_URL,
   SVG_PLAYER_LONG_TEXT_IMAGE_WIDTH,
@@ -194,7 +198,17 @@ import {
 } from "./mock/svgPlayerMock";
 
 const MANIFEST_URL = `${SVG_PLAYER_MANIFEST_URL} (from ${SVG_PLAYER_DATA_ROOT})`;
-type DemoDataset = "original" | "longText";
+type DemoDataset = "original" | "longText" | "kintsugiLongText";
+const demoDatasetOrder: DemoDataset[] = [
+  "original",
+  "longText",
+  "kintsugiLongText",
+];
+const demoDatasetLabels: Record<DemoDataset, string> = {
+  original: "原有 mock 数据",
+  longText: "长文本 mock 数据",
+  kintsugiLongText: "Kintsugi 长文 mock 数据",
+};
 
 // Demo 页面状态：加载、错误、当前传给播放器的数据。
 const loading = ref(true);
@@ -253,6 +267,16 @@ function applyDemoDataset(dataset: DemoDataset) {
     return;
   }
 
+  if (dataset === "kintsugiLongText") {
+    imageUrl.value = SVG_PLAYER_KINTSUGI_LONG_TEXT_IMAGE_URL;
+    sourceImageWidth.value = SVG_PLAYER_KINTSUGI_LONG_TEXT_IMAGE_WIDTH;
+    sourceImageHeight.value = SVG_PLAYER_KINTSUGI_LONG_TEXT_IMAGE_HEIGHT;
+    segmentAssets.value = cloneSegmentAssets(
+      SVG_PLAYER_KINTSUGI_LONG_TEXT_SEGMENT_ASSETS,
+    );
+    return;
+  }
+
   imageUrl.value = SVG_PLAYER_IMAGE_URL;
   sourceImageWidth.value = SVG_PLAYER_IMAGE_WIDTH;
   sourceImageHeight.value = SVG_PLAYER_IMAGE_HEIGHT;
@@ -306,7 +330,7 @@ function handleModeButton() {
 }
 
 function handleToggleDemoDataset() {
-  applyDemoDataset(currentDataset.value === "original" ? "longText" : "original");
+  applyDemoDataset(nextDemoDataset.value);
 }
 
 async function handleAsyncLoadAndPlayDemo() {
@@ -489,13 +513,13 @@ const modeButtonText = computed(() =>
 const displayModeText = computed(() =>
   displayMode.value === "image" ? "图文播放" : "纯文字播放",
 );
-const currentDatasetLabel = computed(() =>
-  currentDataset.value === "original" ? "原有 mock 数据" : "长文本 mock 数据",
-);
+const currentDatasetLabel = computed(() => demoDatasetLabels[currentDataset.value]);
+const nextDemoDataset = computed(() => {
+  const currentIndex = demoDatasetOrder.indexOf(currentDataset.value);
+  return demoDatasetOrder[(currentIndex + 1) % demoDatasetOrder.length]!;
+});
 const toggleDatasetButtonText = computed(() =>
-  currentDataset.value === "original"
-    ? "切换到长文本 mock"
-    : "切换到原有 mock",
+  `切换到${demoDatasetLabels[nextDemoDataset.value]}`,
 );
 function segmentButtonLabel(index: number) {
   if (isSegmentActive(index) && playerState.value === "playing")
