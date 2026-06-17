@@ -49,6 +49,7 @@ export function expandBox(box: BBox): BBox {
 
 // 按布局位置把词聚合为行（run）：先分左右列，再按 y 轴近邻聚类。
 function clusterRuns(words: WordModel[], imageWidth: number): WordModel[][] {
+  const minLineCenterTolerance = 14;
   const left = words.filter((w) => w.bbox.x < imageWidth * 0.55);
   const right = words.filter((w) => w.bbox.x >= imageWidth * 0.55);
 
@@ -65,7 +66,7 @@ function clusterRuns(words: WordModel[], imageWidth: number): WordModel[][] {
         const head = line[0];
         if (!head) continue;
         const ly = head.bbox.y + head.bbox.h / 2;
-        if (Math.abs(cy - ly) <= Math.max(10, head.bbox.h * 0.6)) {
+        if (Math.abs(cy - ly) <= Math.max(minLineCenterTolerance, head.bbox.h * 0.6)) {
           line.push(word);
           placed = true;
           break;
