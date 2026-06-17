@@ -49,30 +49,67 @@ export function expandBox(box: BBox): BBox {
 
 // 按布局位置把词聚合为行（run）：先分左右列，再按 y 轴近邻聚类。
 function clusterRuns(words: WordModel[], imageWidth: number): WordModel[][] {
-  const minLineCenterTolerance = 14;
+  const minLineBaselineTolerance = 8;
   const left = words.filter((w) => w.bbox.x < imageWidth * 0.55);
   const right = words.filter((w) => w.bbox.x >= imageWidth * 0.55);
 
+  const centerX = (word: WordModel) => word.bbox.x + word.bbox.w / 2;
+  const centerY = (word: WordModel) => word.bbox.y + word.bbox.h / 2;
+  const avgHeight = (line: WordModel[]) =>
+    line.reduce((sum, word) => sum + word.bbox.h, 0) / Math.max(1, line.length);
+
+  const predictBaselineY = (line: WordModel[], x: number) => {
+    if (line.length < 2) return centerY(line[0]!);
+
+    let sumX = 0;
+    let sumY = 0;
+    let sumXX = 0;
+    let sumXY = 0;
+    for (const word of line) {
+      const wx = centerX(word);
+      const wy = centerY(word);
+      sumX += wx;
+      sumY += wy;
+      sumXX += wx * wx;
+      sumXY += wx * wy;
+    }
+
+    const n = line.length;
+    const denominator = n * sumXX - sumX * sumX;
+    if (Math.abs(denominator) < 0.000001) return sumY / n;
+
+    const slope = (n * sumXY - sumX * sumY) / denominator;
+    const intercept = (sumY - slope * sumX) / n;
+    return slope * x + intercept;
+  };
+
   const makeLines = (input: WordModel[]) => {
     const sorted = [...input].sort(
-      (a, b) => a.bbox.y + a.bbox.h / 2 - (b.bbox.y + b.bbox.h / 2) || a.bbox.x - b.bbox.x,
+      (a, b) => centerY(a) - centerY(b) || a.bbox.x - b.bbox.x,
     );
 
     const lines: WordModel[][] = [];
     for (const word of sorted) {
-      const cy = word.bbox.y + word.bbox.h / 2;
-      let placed = false;
+      const cx = centerX(word);
+      const cy = centerY(word);
+      let bestLine: WordModel[] | null = null;
+      let bestDistance = Number.POSITIVE_INFINITY;
+
       for (const line of lines) {
-        const head = line[0];
-        if (!head) continue;
-        const ly = head.bbox.y + head.bbox.h / 2;
-        if (Math.abs(cy - ly) <= Math.max(minLineCenterTolerance, head.bbox.h * 0.6)) {
-          line.push(word);
-          placed = true;
-          break;
+        const baselineY = predictBaselineY(line, cx);
+        const distance = Math.abs(cy - baselineY);
+        const tolerance = Math.max(minLineBaselineTolerance, avgHeight(line) * 0.9);
+        if (distance <= tolerance && distance < bestDistance) {
+          bestLine = line;
+          bestDistance = distance;
         }
       }
-      if (!placed) lines.push([word]);
+
+      if (bestLine) {
+        bestLine.push(word);
+      } else {
+        lines.push([word]);
+      }
     }
 
     for (const line of lines) line.sort((a, b) => a.bbox.x - b.bbox.x);
