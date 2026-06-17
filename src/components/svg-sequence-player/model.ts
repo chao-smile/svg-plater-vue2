@@ -17,20 +17,23 @@ function unionBBox(words: WordModel[]): BBox {
   return { x: x0, y: y0, w: Math.max(1, x1 - x0), h: Math.max(1, y1 - y0) };
 }
 
-// 计算图片模式的行效果框：宽度沿用整行并集，高度取本行词高平均值，避免单个异常高词拉高整行。
-function averageHeightBBox(words: WordModel[]): BBox {
+function averageWordHeight(words: WordModel[]): number {
+  return words.reduce((sum, word) => sum + word.bbox.h, 0) / Math.max(1, words.length);
+}
+
+// 计算图片模式的行效果框：宽度沿用整行并集，高度使用当前段全部词高平均值。
+function averageHeightBBox(words: WordModel[], height: number): BBox {
   const union = unionBBox(words);
-  const avgHeight =
-    words.reduce((sum, word) => sum + word.bbox.h, 0) / Math.max(1, words.length);
   const avgCenterY =
     words.reduce((sum, word) => sum + word.bbox.y + word.bbox.h / 2, 0) /
     Math.max(1, words.length);
+  const safeHeight = Math.max(1, height);
 
   return {
     x: union.x,
-    y: avgCenterY - avgHeight / 2,
+    y: avgCenterY - safeHeight / 2,
     w: union.w,
-    h: Math.max(1, avgHeight),
+    h: safeHeight,
   };
 }
 
@@ -55,8 +58,6 @@ function clusterRuns(words: WordModel[], imageWidth: number): WordModel[][] {
 
   const centerX = (word: WordModel) => word.bbox.x + word.bbox.w / 2;
   const centerY = (word: WordModel) => word.bbox.y + word.bbox.h / 2;
-  const avgHeight = (line: WordModel[]) =>
-    line.reduce((sum, word) => sum + word.bbox.h, 0) / Math.max(1, line.length);
 
   const predictBaselineY = (line: WordModel[], x: number) => {
     if (line.length < 2) return centerY(line[0]!);
@@ -98,7 +99,7 @@ function clusterRuns(words: WordModel[], imageWidth: number): WordModel[][] {
       for (const line of lines) {
         const baselineY = predictBaselineY(line, cx);
         const distance = Math.abs(cy - baselineY);
-        const tolerance = Math.max(minLineBaselineTolerance, avgHeight(line) * 0.9);
+        const tolerance = Math.max(minLineBaselineTolerance, averageWordHeight(line) * 0.9);
         if (distance <= tolerance && distance < bestDistance) {
           bestLine = line;
           bestDistance = distance;
@@ -217,9 +218,10 @@ export async function loadSegmentModels(
     const words = buildWords(normalized.ocrTts);
     const inferred = inferImageSize(words);
     const clusterWidth = imageWidth > 0 ? imageWidth : inferred.width;
+    const segmentAverageHeight = averageWordHeight(words);
 
     const runs: RunModel[] = clusterRuns(words, clusterWidth).map((line, i) => {
-      const bbox = averageHeightBBox(line);
+      const bbox = averageHeightBBox(line, segmentAverageHeight);
       const timedWords = line
         .filter(
           (word): word is TimedWordModel =>
