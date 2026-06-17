@@ -17,6 +17,23 @@ function unionBBox(words: WordModel[]): BBox {
   return { x: x0, y: y0, w: Math.max(1, x1 - x0), h: Math.max(1, y1 - y0) };
 }
 
+// 计算图片模式的行效果框：宽度沿用整行并集，高度取本行词高平均值，避免单个异常高词拉高整行。
+function averageHeightBBox(words: WordModel[]): BBox {
+  const union = unionBBox(words);
+  const avgHeight =
+    words.reduce((sum, word) => sum + word.bbox.h, 0) / Math.max(1, words.length);
+  const avgCenterY =
+    words.reduce((sum, word) => sum + word.bbox.y + word.bbox.h / 2, 0) /
+    Math.max(1, words.length);
+
+  return {
+    x: union.x,
+    y: avgCenterY - avgHeight / 2,
+    w: union.w,
+    h: Math.max(1, avgHeight),
+  };
+}
+
 // 对行矩形做适度扩展，避免高亮视觉过于贴边。
 export function expandBox(box: BBox): BBox {
   const padX = Math.max(1, Math.round(box.h * 0.06));
@@ -164,7 +181,7 @@ export async function loadSegmentModels(
     const clusterWidth = imageWidth > 0 ? imageWidth : inferred.width;
 
     const runs: RunModel[] = clusterRuns(words, clusterWidth).map((line, i) => {
-      const bbox = unionBBox(line);
+      const bbox = averageHeightBBox(line);
       const timedWords = line
         .filter(
           (word): word is TimedWordModel =>
