@@ -65,6 +65,17 @@ type ResourceMock = {
 };
 
 const KINTSUGI_LONG_TEXT_FALLBACK_DURATIONS_MS = [23576];
+const DEMO_SEGMENT_HIGHLIGHT_COLORS = [
+  "#f2b4ae",
+  "#b9d8ff",
+  "#f8d477",
+  "#bfe7c4",
+  "#d9c2ff",
+];
+
+function getDemoSegmentHighlightColor(index: number): string {
+  return DEMO_SEGMENT_HIGHLIGHT_COLORS[index % DEMO_SEGMENT_HIGHLIGHT_COLORS.length]!;
+}
 
 function normalizeRemoteUrl(url: unknown): string {
   return String(url ?? "").replace(/^http:\/\//, "https://");
@@ -128,20 +139,23 @@ export const SVG_PLAYER_KINTSUGI_LONG_TEXT_IMAGE_HEIGHT =
   Number(kintsugiLongTextResource.height) || 864;
 
 // SegmentAsset 是组件真正消费的数据结构：音频 URL + ocr_tts 单词时序数组。
-export const SVG_PLAYER_SEGMENT_ASSETS: SegmentAsset[] = SVG_PLAYER_MANIFEST.segments.map((segment) => ({
-  id: segment.id,
-  text: segment.text,
-  audio_url: toMockUrl(segment.audio),
-  ocr_tts: mergeOcrTts(
-    readMockJson(ocrModules, segment.ocr, "ocr"),
-    readMockJson(ttsModules, segment.tts, "tts"),
-  ),
-}));
+export const SVG_PLAYER_SEGMENT_ASSETS: SegmentAsset[] =
+  SVG_PLAYER_MANIFEST.segments.map((segment, index) => ({
+    id: segment.id,
+    text: segment.text,
+    audio_url: toMockUrl(segment.audio),
+    highlightColor: getDemoSegmentHighlightColor(index),
+    ocr_tts: mergeOcrTts(
+      readMockJson(ocrModules, segment.ocr, "ocr"),
+      readMockJson(ttsModules, segment.tts, "tts"),
+    ),
+  }));
 
 export const SVG_PLAYER_LONG_TEXT_SEGMENT_ASSETS: SegmentAsset[] = (
   longTextSegmentAssetsJson as SegmentAsset[]
 ).map((asset) => ({
   ...asset,
+  highlightColor: asset.highlightColor ?? "#b9d8ff",
   // Demo 页面可能部署在 HTTPS 下，统一把远程音频升级成 HTTPS，避免混合内容拦截。
   audio_url: normalizeRemoteUrl(asset.audio_url),
 }));
@@ -152,6 +166,7 @@ export const SVG_PLAYER_KINTSUGI_LONG_TEXT_SEGMENT_ASSETS: SegmentAsset[] = (
   id: `kintsugi-long-text-${index + 1}`,
   text: String(resource.text ?? `Kintsugi long text ${index + 1}`),
   audio_url: normalizeRemoteUrl(resource.audio_url),
+  highlightColor: getDemoSegmentHighlightColor(index),
   ocr_tts: normalizeResourceWords(resource.ocr_tts ?? [], index),
 }));
 

@@ -51,7 +51,11 @@
           </clipPath>
         </defs>
 
-        <g v-for="segment in segments" :key="segment.id">
+        <g
+          v-for="segment in segments"
+          :key="segment.id"
+          :style="segmentHighlightStyle(segment)"
+        >
           <g v-for="run in segment.runs" :key="run.id">
             <rect
               v-if="props.showOutline"
@@ -141,6 +145,7 @@ type TextLineModel = {
   text: string;
   segmentIndex: number;
   segmentId: string;
+  highlightColor?: string;
   t0: number;
   t1: number;
   totalUnits: number;
@@ -871,6 +876,16 @@ const themeVars = computed(() => ({
   "--seg-radius": String(Math.max(0, props.highlightRadius ?? 0)),
 }));
 
+function resolveSegmentHighlightColor(segment: Pick<SegmentModel, "highlightColor">) {
+  return segment.highlightColor || props.highlightColor;
+}
+
+function segmentHighlightStyle(segment: SegmentModel) {
+  return {
+    "--seg-hl-color": resolveSegmentHighlightColor(segment),
+  };
+}
+
 // 当前展示模式（image/text），无效值兜底到 image。
 const displayMode = computed<DisplayMode>(() =>
   props.displayMode === "text" ? "text" : "image",
@@ -1023,6 +1038,7 @@ function buildTextLineModel(
     text: textParts.join("").trim(),
     segmentIndex,
     segmentId: segment.id,
+    highlightColor: segment.highlightColor,
     t0,
     t1,
     totalUnits,
@@ -1121,8 +1137,11 @@ function lineProgress(index: number, line: TextLineModel): number {
 
 // 生成文本行样式变量，用于驱动行内背景进度渲染。
 function textLineStyle(index: number, line: TextLineModel) {
+  const highlightColor = resolveSegmentHighlightColor(line);
   return {
     "--seg-progress": `${(lineProgress(index, line) * 100).toFixed(2)}%`,
+    "--seg-hl-color": highlightColor,
+    "--seg-hl-soft-color": toSoftColor(highlightColor, 0.56),
   };
 }
 
@@ -1430,7 +1449,7 @@ defineExpose<SvgSequencePlayerExpose>({
   border-radius: calc(var(--seg-radius, 0) * 1px);
   background: linear-gradient(
     to right,
-    var(--hl-soft-color) 0 var(--seg-progress),
+    var(--seg-hl-soft-color, var(--hl-soft-color)) 0 var(--seg-progress),
     transparent var(--seg-progress) 100%
   );
   transition:
@@ -1443,21 +1462,21 @@ defineExpose<SvgSequencePlayerExpose>({
 }
 
 .base {
-  fill: var(--hl-color);
+  fill: var(--seg-hl-color, var(--hl-color));
   fill-opacity: 0.08;
-  stroke: var(--hl-color);
+  stroke: var(--seg-hl-color, var(--hl-color));
   stroke-opacity: 0.3;
   stroke-width: 1;
 }
 
 .base.active {
-  stroke: var(--hl-color);
+  stroke: var(--seg-hl-color, var(--hl-color));
   stroke-opacity: 0.95;
   stroke-width: 2;
 }
 
 .fill {
-  fill: var(--hl-color);
+  fill: var(--seg-hl-color, var(--hl-color));
   fill-opacity: 0.32;
   stroke: none;
 }

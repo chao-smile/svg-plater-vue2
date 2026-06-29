@@ -65,6 +65,7 @@ const segmentAssets = ref<SegmentAsset[]>([
   {
     id: "segment-1",
     audio_url: "/assets/seg-1.mp3",
+    highlightColor: "#f2b4ae",
     text: "第一段文本",
     ocr_tts: [
       {
@@ -105,6 +106,7 @@ function handleProgressChange(progress: SvgSequencePlayerProgress) {
 type SegmentAsset = {
   id?: string;
   audio_url: string;
+  highlightColor?: string;
   text: string;
   ocr_tts: {
     text: string;
@@ -118,6 +120,7 @@ type SegmentAsset = {
 说明：
 
 - `audio_url` 必填，不能为空
+- `highlightColor` 可选，用于覆盖该 segment 的进度背景/高亮颜色；不传时使用组件级 `highlightColor`
 - 单个 segment 的 `ocr_tts` 必填，且至少要有 1 个词
 - `segmentAssets` 可以传空数组；此时组件不会播放段落，但 `imageUrl` 对应的图片会正常展示
 - `rotated_rect` 当前至少会读取前 4 位，按 `[centerX, centerY, width, height, angle]` 处理
@@ -143,6 +146,7 @@ type SegmentAsset = {
 补充说明：
 
 - 传入 `sourceImageWidth` / `sourceImageHeight` 可以避免组件额外解析图片尺寸
+- 如需每个段落不同颜色，在对应 `segmentAssets[index].highlightColor` 传入颜色值即可；该颜色会同时作用于图文高亮模式和纯文字进度背景
 - 如果图片尺寸也拿不到，组件会退回到基于 OCR 词框推导出的最小可用尺寸
 - `imageUrl`、`segmentAssets`、`sourceImageWidth`、`sourceImageHeight` 变化时，组件会停止当前播放并重新构建内部模型
 - `segmentAssets` 使用深度监听，调用方原地修改 `ocr_tts` 中的词文本、时间戳或坐标时，也会触发重新加载

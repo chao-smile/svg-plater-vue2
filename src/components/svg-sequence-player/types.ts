@@ -87,6 +87,7 @@ export type SegmentModel = {
   id: string;
   audioUrl: string;
   text: string;
+  highlightColor?: string;
   t0: number;
   t1: number;
   runs: RunModel[];
@@ -102,6 +103,7 @@ export type SegmentOcrTtsWord = {
 export type SegmentAsset = {
   id?: string;
   audio_url: string;
+  highlightColor?: string;
   ocr_tts: SegmentOcrTtsWord[];
   text: string;
 };

@@ -185,6 +185,10 @@ function normalizeSegmentAsset(asset: SegmentAsset, index: number) {
   return {
     id: String(asset.id ?? `segment-${index + 1}`),
     audioUrl,
+    highlightColor:
+      typeof asset.highlightColor === "string" && asset.highlightColor.trim()
+        ? asset.highlightColor.trim()
+        : undefined,
     text: String(asset.text ?? ""),
     ocrTts: asset.ocr_tts,
   };
@@ -240,6 +244,7 @@ export async function loadSegmentModels(
       id: normalized.id,
       audioUrl: normalized.audioUrl,
       text: normalized.text,
+      highlightColor: normalized.highlightColor,
       t0: range.t0,
       t1: range.t1,
       runs,
