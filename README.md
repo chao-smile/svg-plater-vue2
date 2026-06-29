@@ -121,6 +121,7 @@ type SegmentAsset = {
 
 - `audio_url` 必填，不能为空
 - `highlightColor` 可选，用于覆盖该 segment 的进度背景/高亮颜色；不传时使用组件级 `highlightColor`
+- 当 `highlightColor` 是 `#fff` 等非常浅的颜色时，组件会自动使用浅灰可见态渲染，避免白色在白底或混合模式下看不出进度
 - 单个 segment 的 `ocr_tts` 必填，且至少要有 1 个词
 - `segmentAssets` 可以传空数组；此时组件不会播放段落，但 `imageUrl` 对应的图片会正常展示
 - `rotated_rect` 当前至少会读取前 4 位，按 `[centerX, centerY, width, height, angle]` 处理

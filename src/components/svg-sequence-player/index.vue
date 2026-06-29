@@ -871,8 +871,7 @@ async function waitForModelReady() {
 
 // 主题变量：提供给样式层的高亮色与圆角参数。
 const themeVars = computed(() => ({
-  "--hl-color": props.highlightColor,
-  "--hl-soft-color": toSoftColor(props.highlightColor, 0.56),
+  ...toHighlightVars(props.highlightColor),
   "--seg-radius": String(Math.max(0, props.highlightRadius ?? 0)),
 }));
 
@@ -881,9 +880,7 @@ function resolveSegmentHighlightColor(segment: Pick<SegmentModel, "highlightColo
 }
 
 function segmentHighlightStyle(segment: SegmentModel) {
-  return {
-    "--seg-hl-color": resolveSegmentHighlightColor(segment),
-  };
+  return toHighlightVars(resolveSegmentHighlightColor(segment));
 }
 
 // 当前展示模式（image/text），无效值兜底到 image。
@@ -909,21 +906,32 @@ const supportsBlendMode =
   typeof CSS.supports === "function" &&
   CSS.supports("mix-blend-mode", "multiply");
 
-// 将高亮色转成带透明度的 rgba，供进度背景渐变使用。
-function toSoftColor(color: string, alpha: number): string {
+type ParsedColor = {
+  r: number;
+  g: number;
+  b: number;
+};
+
+function toRgba(color: ParsedColor, alpha: number): string {
   const safeAlpha = Math.max(0, Math.min(1, alpha));
+  return `rgba(${color.r}, ${color.g}, ${color.b}, ${safeAlpha})`;
+}
+
+function parseColor(color: string): ParsedColor | null {
   const hex = color.trim().replace("#", "");
   if (/^[0-9a-fA-F]{3}$/.test(hex)) {
-    const r = Number.parseInt(`${hex[0]}${hex[0]}`, 16);
-    const g = Number.parseInt(`${hex[1]}${hex[1]}`, 16);
-    const b = Number.parseInt(`${hex[2]}${hex[2]}`, 16);
-    return `rgba(${r}, ${g}, ${b}, ${safeAlpha})`;
+    return {
+      r: Number.parseInt(`${hex[0]}${hex[0]}`, 16),
+      g: Number.parseInt(`${hex[1]}${hex[1]}`, 16),
+      b: Number.parseInt(`${hex[2]}${hex[2]}`, 16),
+    };
   }
   if (/^[0-9a-fA-F]{6}$/.test(hex)) {
-    const r = Number.parseInt(hex.slice(0, 2), 16);
-    const g = Number.parseInt(hex.slice(2, 4), 16);
-    const b = Number.parseInt(hex.slice(4, 6), 16);
-    return `rgba(${r}, ${g}, ${b}, ${safeAlpha})`;
+    return {
+      r: Number.parseInt(hex.slice(0, 2), 16),
+      g: Number.parseInt(hex.slice(2, 4), 16),
+      b: Number.parseInt(hex.slice(4, 6), 16),
+    };
   }
   const rgbMatch = color.match(/rgba?\(([^)]+)\)/i);
   if (rgbMatch) {
@@ -932,10 +940,55 @@ function toSoftColor(color: string, alpha: number): string {
       .slice(0, 3)
       .map((v) => Number.parseFloat(v.trim()));
     if ([r, g, b].every((v) => Number.isFinite(v))) {
-      return `rgba(${r}, ${g}, ${b}, ${safeAlpha})`;
+      return { r, g, b };
     }
   }
-  return `rgba(242, 180, 174, ${safeAlpha})`;
+  return null;
+}
+
+function relativeLuminance(color: ParsedColor): number {
+  const toLinear = (value: number) => {
+    const channel = value / 255;
+    return channel <= 0.03928
+      ? channel / 12.92
+      : ((channel + 0.055) / 1.055) ** 2.4;
+  };
+  return (
+    0.2126 * toLinear(color.r) +
+    0.7152 * toLinear(color.g) +
+    0.0722 * toLinear(color.b)
+  );
+}
+
+// 将高亮色转成带透明度的 rgba，供进度背景渐变使用。
+function toSoftColor(color: string, alpha: number): string {
+  const parsed = parseColor(color);
+  return parsed ? toRgba(parsed, alpha) : toRgba({ r: 242, g: 180, b: 174 }, alpha);
+}
+
+function toHighlightVars(color: string) {
+  const parsed = parseColor(color);
+  const isVeryLight = parsed ? relativeLuminance(parsed) >= 0.88 : false;
+
+  if (isVeryLight) {
+    return {
+      "--hl-color": "#d1d5db",
+      "--hl-soft-color": "rgba(156, 163, 175, 0.36)",
+      "--hl-stroke-color": "rgba(75, 85, 99, 0.5)",
+      "--hl-fill-opacity": "0.38",
+      "--hl-blend-opacity": "0.38",
+      "--hl-blend-mode": "normal",
+    };
+  }
+
+  return {
+    "--hl-color": color,
+    "--hl-soft-color": toSoftColor(color, 0.56),
+    "--hl-stroke-color": color,
+    "--hl-fill-opacity": "0.32",
+    "--hl-blend-opacity": "0.6",
+    "--hl-blend-mode": "multiply",
+  };
 }
 
 // 记录/移除文本行 DOM 引用，供居中滚动计算使用。
@@ -1140,8 +1193,7 @@ function textLineStyle(index: number, line: TextLineModel) {
   const highlightColor = resolveSegmentHighlightColor(line);
   return {
     "--seg-progress": `${(lineProgress(index, line) * 100).toFixed(2)}%`,
-    "--seg-hl-color": highlightColor,
-    "--seg-hl-soft-color": toSoftColor(highlightColor, 0.56),
+    ...toHighlightVars(highlightColor),
   };
 }
 
@@ -1449,7 +1501,7 @@ defineExpose<SvgSequencePlayerExpose>({
   border-radius: calc(var(--seg-radius, 0) * 1px);
   background: linear-gradient(
     to right,
-    var(--seg-hl-soft-color, var(--hl-soft-color)) 0 var(--seg-progress),
+    var(--hl-soft-color) 0 var(--seg-progress),
     transparent var(--seg-progress) 100%
   );
   transition:
@@ -1462,27 +1514,27 @@ defineExpose<SvgSequencePlayerExpose>({
 }
 
 .base {
-  fill: var(--seg-hl-color, var(--hl-color));
+  fill: var(--hl-color);
   fill-opacity: 0.08;
-  stroke: var(--seg-hl-color, var(--hl-color));
+  stroke: var(--hl-stroke-color);
   stroke-opacity: 0.3;
   stroke-width: 1;
 }
 
 .base.active {
-  stroke: var(--seg-hl-color, var(--hl-color));
+  stroke: var(--hl-stroke-color);
   stroke-opacity: 0.95;
   stroke-width: 2;
 }
 
 .fill {
-  fill: var(--seg-hl-color, var(--hl-color));
-  fill-opacity: 0.32;
+  fill: var(--hl-color);
+  fill-opacity: var(--hl-fill-opacity);
   stroke: none;
 }
 
 .blend-supported .fill {
-  fill-opacity: 0.6;
-  mix-blend-mode: multiply;
+  fill-opacity: var(--hl-blend-opacity);
+  mix-blend-mode: var(--hl-blend-mode);
 }
 </style>

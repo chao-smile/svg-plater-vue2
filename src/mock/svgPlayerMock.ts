@@ -66,7 +66,7 @@ type ResourceMock = {
 
 const KINTSUGI_LONG_TEXT_FALLBACK_DURATIONS_MS = [23576];
 const DEMO_SEGMENT_HIGHLIGHT_COLORS = [
-  "#f2b4ae",
+  "#fff",
   "#b9d8ff",
   "#f8d477",
   "#bfe7c4",
