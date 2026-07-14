@@ -48,9 +48,62 @@ export function expandBox(box: BBox): BBox {
   };
 }
 
-// segment 数据已经按分栏拆分；这里只在 segment 内按 y 轴近邻聚合为行（run）。
-function clusterRuns(words: WordModel[]): WordModel[][] {
+function boxesIntersect(a: BBox, b: BBox): boolean {
+  return (
+    a.x < b.x + b.w &&
+    b.x < a.x + a.w &&
+    a.y < b.y + b.h &&
+    b.y < a.y + a.h
+  );
+}
+
+// 分行算法可能因 OCR 基线轻微倾斜把同一行拆成多个 run。
+// 仅合并视觉矩形确实相交、且垂直中心足够接近的 run，避免误合并相邻正文行。
+function mergeOverlappingRuns(lines: WordModel[][], height: number): WordModel[][] {
+  const safeHeight = Math.max(1, height);
+  const verticalCenterTolerance = Math.max(2, safeHeight * 0.5);
+  const effectBox = (line: WordModel[]) => expandBox(averageHeightBBox(line, safeHeight));
+  const centerY = (box: BBox) => box.y + box.h / 2;
+  const merged: WordModel[][] = [];
+
+  for (const line of lines) {
+    let current = [...line].sort((a, b) => a.bbox.x - b.bbox.x);
+    let matchIndex = -1;
+
+    do {
+      const currentBox = effectBox(current);
+      matchIndex = merged.findIndex((candidate) => {
+        const candidateBox = effectBox(candidate);
+        return (
+          Math.abs(centerY(currentBox) - centerY(candidateBox)) <=
+            verticalCenterTolerance && boxesIntersect(currentBox, candidateBox)
+        );
+      });
+
+      if (matchIndex >= 0) {
+        current = [...merged[matchIndex]!, ...current].sort(
+          (a, b) => a.bbox.x - b.bbox.x,
+        );
+        merged.splice(matchIndex, 1);
+      }
+    } while (matchIndex >= 0);
+
+    merged.push(current);
+  }
+
+  merged.sort((a, b) => {
+    const boxA = effectBox(a);
+    const boxB = effectBox(b);
+    return boxA.y - boxB.y || boxA.x - boxB.x;
+  });
+  return merged;
+}
+
+// 按布局位置把词聚合为行（run）：先分左右列，再按 y 轴近邻聚类。
+function clusterRuns(words: WordModel[], imageWidth: number): WordModel[][] {
   const minLineBaselineTolerance = 8;
+  const left = words.filter((word) => word.bbox.x < imageWidth * 0.55);
+  const right = words.filter((word) => word.bbox.x >= imageWidth * 0.55);
 
   const centerX = (word: WordModel) => word.bbox.x + word.bbox.w / 2;
   const centerY = (word: WordModel) => word.bbox.y + word.bbox.h / 2;
@@ -113,7 +166,9 @@ function clusterRuns(words: WordModel[]): WordModel[][] {
     return lines;
   };
 
-  const lines = makeLines(words).filter((line) => line.length > 0);
+  const lines = [...makeLines(left), ...makeLines(right)].filter(
+    (line) => line.length > 0,
+  );
   lines.sort((a, b) => a[0]!.bbox.y - b[0]!.bbox.y || a[0]!.bbox.x - b[0]!.bbox.x);
   return lines;
 }
@@ -217,9 +272,14 @@ export async function loadSegmentModels(
     const normalized = normalizeSegmentAsset(asset, index);
     const words = buildWords(normalized.ocrTts);
     const inferred = inferImageSize(words);
+    const clusterWidth = imageWidth > 0 ? imageWidth : inferred.width;
     const segmentAverageHeight = averageWordHeight(words);
+    const mergedLines = mergeOverlappingRuns(
+      clusterRuns(words, clusterWidth),
+      segmentAverageHeight,
+    );
 
-    const runs: RunModel[] = clusterRuns(words).map((line, i) => {
+    const runs: RunModel[] = mergedLines.map((line, i) => {
       const bbox = averageHeightBBox(line, segmentAverageHeight);
       const timedWords = line
         .filter(
