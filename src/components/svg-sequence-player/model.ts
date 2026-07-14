@@ -99,11 +99,9 @@ function mergeOverlappingRuns(lines: WordModel[][], height: number): WordModel[]
   return merged;
 }
 
-// 按布局位置把词聚合为行（run）：先分左右列，再按 y 轴近邻聚类。
-function clusterRuns(words: WordModel[], imageWidth: number): WordModel[][] {
+// segment 数据已经按分栏拆分；这里只在当前 segment 内按 y 轴近邻聚合为行（run）。
+function clusterRuns(words: WordModel[]): WordModel[][] {
   const minLineBaselineTolerance = 8;
-  const left = words.filter((word) => word.bbox.x < imageWidth * 0.55);
-  const right = words.filter((word) => word.bbox.x >= imageWidth * 0.55);
 
   const centerX = (word: WordModel) => word.bbox.x + word.bbox.w / 2;
   const centerY = (word: WordModel) => word.bbox.y + word.bbox.h / 2;
@@ -166,9 +164,7 @@ function clusterRuns(words: WordModel[], imageWidth: number): WordModel[][] {
     return lines;
   };
 
-  const lines = [...makeLines(left), ...makeLines(right)].filter(
-    (line) => line.length > 0,
-  );
+  const lines = makeLines(words).filter((line) => line.length > 0);
   lines.sort((a, b) => a[0]!.bbox.y - b[0]!.bbox.y || a[0]!.bbox.x - b[0]!.bbox.x);
   return lines;
 }
@@ -272,10 +268,9 @@ export async function loadSegmentModels(
     const normalized = normalizeSegmentAsset(asset, index);
     const words = buildWords(normalized.ocrTts);
     const inferred = inferImageSize(words);
-    const clusterWidth = imageWidth > 0 ? imageWidth : inferred.width;
     const segmentAverageHeight = averageWordHeight(words);
     const mergedLines = mergeOverlappingRuns(
-      clusterRuns(words, clusterWidth),
+      clusterRuns(words),
       segmentAverageHeight,
     );
 
