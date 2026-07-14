@@ -1,0 +1,1699 @@
+[
+    {
+        "text": "Trinity",
+        "handwritten": 0,
+        "rotated_rect": [
+            861,
+            70,
+            59,
+            21,
+            0
+        ],
+        "char_candidates": [
+            [
+                "T",
+                "I"
+            ],
+            [
+                "r"
+            ],
+            [
+                "i"
+            ],
+            [
+                "n"
+            ],
+            [
+                "i"
+            ],
+            [
+                "t"
+            ],
+            [
+                "y"
+            ]
+        ],
+        "char_candidates_score": [
+            [
+                0.999,
+                0
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ]
+        ],
+        "original_rotated_rect": [
+            861,
+            70,
+            59,
+            21,
+            0
+        ],
+        "_isDefaultRect": false,
+        "begin_time": 480,
+        "end_time": 960
+    },
+    {
+        "text": "grabbed",
+        "handwritten": 0,
+        "rotated_rect": [
+            937,
+            70,
+            73,
+            21,
+            0
+        ],
+        "char_candidates": [
+            [
+                "g"
+            ],
+            [
+                "r"
+            ],
+            [
+                "a"
+            ],
+            [
+                "b"
+            ],
+            [
+                "b"
+            ],
+            [
+                "e"
+            ],
+            [
+                "d"
+            ]
+        ],
+        "char_candidates_score": [
+            [
+                0.999
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ]
+        ],
+        "original_rotated_rect": [
+            937,
+            70,
+            73,
+            21,
+            0
+        ],
+        "_isDefaultRect": false,
+        "begin_time": 960,
+        "end_time": 1320
+    },
+    {
+        "text": "her",
+        "handwritten": 0,
+        "rotated_rect": [
+            998,
+            69,
+            31,
+            16,
+            0
+        ],
+        "char_candidates": [
+            [
+                "h"
+            ],
+            [
+                "e"
+            ],
+            [
+                "r"
+            ]
+        ],
+        "char_candidates_score": [
+            [
+                0.999
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ]
+        ],
+        "original_rotated_rect": [
+            998,
+            69,
+            31,
+            16,
+            0
+        ],
+        "_isDefaultRect": false,
+        "begin_time": 1320,
+        "end_time": 1720
+    },
+    {
+        "text": "compass.",
+        "handwritten": 0,
+        "rotated_rect": [
+            1067,
+            72,
+            91,
+            11,
+            0
+        ],
+        "char_candidates": [
+            [
+                "c"
+            ],
+            [
+                "o"
+            ],
+            [
+                "m"
+            ],
+            [
+                "p"
+            ],
+            [
+                "a"
+            ],
+            [
+                "s"
+            ],
+            [
+                "s"
+            ],
+            [
+                ".",
+                ","
+            ]
+        ],
+        "char_candidates_score": [
+            [
+                0.999
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999,
+                0
+            ]
+        ],
+        "original_rotated_rect": [
+            1067,
+            72,
+            91,
+            11,
+            0
+        ],
+        "_isDefaultRect": false,
+        "begin_time": 1720,
+        "end_time": 2160
+    },
+    {
+        "text": "\"East",
+        "handwritten": 0,
+        "rotated_rect": [
+            1138,
+            66,
+            51,
+            16,
+            0
+        ],
+        "char_candidates": [
+            [
+                "“",
+                "\""
+            ],
+            [
+                "E"
+            ],
+            [
+                "a"
+            ],
+            [
+                "s"
+            ],
+            [
+                "t"
+            ]
+        ],
+        "char_candidates_score": [
+            [
+                0.712,
+                0.287
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ]
+        ],
+        "original_rotated_rect": [
+            1138,
+            66,
+            51,
+            16,
+            0
+        ],
+        "_isDefaultRect": false,
+        "begin_time": 2640,
+        "end_time": 3000
+    },
+    {
+        "text": "by",
+        "handwritten": 0,
+        "rotated_rect": [
+            1182,
+            70,
+            21,
+            20,
+            0
+        ],
+        "char_candidates": [
+            [
+                "b"
+            ],
+            [
+                "y"
+            ]
+        ],
+        "char_candidates_score": [
+            [
+                0.999
+            ],
+            [
+                0.999
+            ]
+        ],
+        "original_rotated_rect": [
+            1182,
+            70,
+            21,
+            20,
+            0
+        ],
+        "_isDefaultRect": false,
+        "begin_time": 3000,
+        "end_time": 3280
+    },
+    {
+        "text": "southeast.",
+        "handwritten": 0,
+        "rotated_rect": [
+            968,
+            93,
+            4,
+            6,
+            0
+        ],
+        "char_candidates": [
+            [
+                "\"",
+                "”",
+                ",",
+                "'"
+            ]
+        ],
+        "char_candidates_score": [
+            [
+                0.993,
+                0.003,
+                0.002,
+                0
+            ]
+        ],
+        "original_rotated_rect": [
+            968,
+            93,
+            4,
+            6,
+            0
+        ],
+        "_isDefaultRect": false,
+        "begin_time": 3280,
+        "end_time": 4000
+    },
+    {
+        "text": "Home,\"",
+        "handwritten": 0,
+        "rotated_rect": [
+            852,
+            103,
+            104,
+            12,
+            0
+        ],
+        "char_candidates": [
+            [
+                "s",
+                "S"
+            ],
+            [
+                "o"
+            ],
+            [
+                "u"
+            ],
+            [
+                "t"
+            ],
+            [
+                "h"
+            ],
+            [
+                "e"
+            ],
+            [
+                "a"
+            ],
+            [
+                "s"
+            ],
+            [
+                "t"
+            ],
+            [
+                ".",
+                ","
+            ]
+        ],
+        "char_candidates_score": [
+            [
+                0.999,
+                0
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999,
+                0
+            ]
+        ],
+        "original_rotated_rect": [
+            852,
+            103,
+            104,
+            12,
+            0
+        ],
+        "_isDefaultRect": false,
+        "begin_time": 4360,
+        "end_time": 4800
+    },
+    {
+        "text": "she",
+        "handwritten": 0,
+        "rotated_rect": [
+            937,
+            98,
+            61,
+            18,
+            0
+        ],
+        "char_candidates": [
+            [
+                "H",
+                "h"
+            ],
+            [
+                "o"
+            ],
+            [
+                "m"
+            ],
+            [
+                "e"
+            ],
+            [
+                ",",
+                "\"",
+                "'",
+                "”"
+            ]
+        ],
+        "char_candidates_score": [
+            [
+                0.999,
+                0
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ],
+            [
+                0.947,
+                0.047,
+                0.002,
+                0
+            ]
+        ],
+        "original_rotated_rect": [
+            937,
+            98,
+            61,
+            18,
+            0
+        ],
+        "_isDefaultRect": false,
+        "begin_time": 5200,
+        "end_time": 5520
+    },
+    {
+        "text": "commanded.",
+        "handwritten": 0,
+        "rotated_rect": [
+            992,
+            101,
+            31,
+            12,
+            0
+        ],
+        "char_candidates": [
+            [
+                "s"
+            ],
+            [
+                "h"
+            ],
+            [
+                "e"
+            ]
+        ],
+        "char_candidates_score": [
+            [
+                0.999
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ]
+        ],
+        "original_rotated_rect": [
+            992,
+            101,
+            31,
+            12,
+            0
+        ],
+        "_isDefaultRect": false,
+        "begin_time": 5520,
+        "end_time": 6040
+    },
+    {
+        "text": "The",
+        "handwritten": 0,
+        "rotated_rect": [
+            1076,
+            103,
+            118,
+            12,
+            0
+        ],
+        "char_candidates": [
+            [
+                "c"
+            ],
+            [
+                "o"
+            ],
+            [
+                "m"
+            ],
+            [
+                "m"
+            ],
+            [
+                "a"
+            ],
+            [
+                "n"
+            ],
+            [
+                "d"
+            ],
+            [
+                "e"
+            ],
+            [
+                "d"
+            ],
+            [
+                "."
+            ]
+        ],
+        "char_candidates_score": [
+            [
+                0.999
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ]
+        ],
+        "original_rotated_rect": [
+            1076,
+            103,
+            118,
+            12,
+            0
+        ],
+        "_isDefaultRect": false,
+        "begin_time": 6640,
+        "end_time": 6960
+    },
+    {
+        "text": "robot",
+        "handwritten": 0,
+        "rotated_rect": [
+            1157,
+            99,
+            31,
+            17,
+            0
+        ],
+        "char_candidates": [
+            [
+                "T"
+            ],
+            [
+                "h"
+            ],
+            [
+                "e"
+            ]
+        ],
+        "char_candidates_score": [
+            [
+                0.999
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ]
+        ],
+        "original_rotated_rect": [
+            1157,
+            99,
+            31,
+            17,
+            0
+        ],
+        "_isDefaultRect": false,
+        "begin_time": 6960,
+        "end_time": 7320
+    },
+    {
+        "text": "moved",
+        "handwritten": 0,
+        "rotated_rect": [
+            1208,
+            100,
+            52,
+            14,
+            0
+        ],
+        "char_candidates": [
+            [
+                "r"
+            ],
+            [
+                "o"
+            ],
+            [
+                "b"
+            ],
+            [
+                "o"
+            ],
+            [
+                "t"
+            ]
+        ],
+        "char_candidates_score": [
+            [
+                0.999
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ]
+        ],
+        "original_rotated_rect": [
+            1208,
+            100,
+            52,
+            14,
+            0
+        ],
+        "_isDefaultRect": false,
+        "begin_time": 7320,
+        "end_time": 7720
+    },
+    {
+        "text": "slightly",
+        "handwritten": 0,
+        "rotated_rect": [
+            833,
+            130,
+            60,
+            17,
+            0
+        ],
+        "char_candidates": [
+            [
+                "m"
+            ],
+            [
+                "o"
+            ],
+            [
+                "v"
+            ],
+            [
+                "e"
+            ],
+            [
+                "d"
+            ]
+        ],
+        "char_candidates_score": [
+            [
+                0.999
+            ],
+            [
+                0.999
+            ],
+            [
+                1
+            ],
+            [
+                1
+            ],
+            [
+                0.999
+            ]
+        ],
+        "original_rotated_rect": [
+            833,
+            130,
+            60,
+            17,
+            0
+        ],
+        "_isDefaultRect": false,
+        "begin_time": 7720,
+        "end_time": 8200
+    },
+    {
+        "text": "and",
+        "handwritten": 0,
+        "rotated_rect": [
+            905,
+            133,
+            67,
+            16,
+            0
+        ],
+        "char_candidates": [
+            [
+                "s"
+            ],
+            [
+                "l"
+            ],
+            [
+                "i"
+            ],
+            [
+                "g"
+            ],
+            [
+                "h"
+            ],
+            [
+                "t"
+            ],
+            [
+                "l"
+            ],
+            [
+                "y"
+            ]
+        ],
+        "char_candidates_score": [
+            [
+                0.999
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ]
+        ],
+        "original_rotated_rect": [
+            905,
+            133,
+            67,
+            16,
+            0
+        ],
+        "_isDefaultRect": false,
+        "begin_time": 8360,
+        "end_time": 8640
+    },
+    {
+        "text": "Trinity",
+        "handwritten": 0,
+        "rotated_rect": [
+            963,
+            130,
+            33,
+            17,
+            0
+        ],
+        "char_candidates": [
+            [
+                "a"
+            ],
+            [
+                "n"
+            ],
+            [
+                "d"
+            ]
+        ],
+        "char_candidates_score": [
+            [
+                0.999
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ]
+        ],
+        "original_rotated_rect": [
+            963,
+            130,
+            33,
+            17,
+            0
+        ],
+        "_isDefaultRect": false,
+        "begin_time": 8640,
+        "end_time": 9040
+    },
+    {
+        "text": "heard",
+        "handwritten": 0,
+        "rotated_rect": [
+            1019,
+            131,
+            58,
+            21,
+            0
+        ],
+        "char_candidates": [
+            [
+                "T",
+                "I",
+                "l"
+            ],
+            [
+                "r"
+            ],
+            [
+                "i"
+            ],
+            [
+                "n"
+            ],
+            [
+                "i"
+            ],
+            [
+                "t"
+            ],
+            [
+                "y"
+            ]
+        ],
+        "char_candidates_score": [
+            [
+                0.999,
+                0,
+                0
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ]
+        ],
+        "original_rotated_rect": [
+            1019,
+            131,
+            58,
+            21,
+            0
+        ],
+        "_isDefaultRect": false,
+        "begin_time": 9040,
+        "end_time": 9280
+    },
+    {
+        "text": "it",
+        "handwritten": 0,
+        "rotated_rect": [
+            1082,
+            129,
+            51,
+            17,
+            0
+        ],
+        "char_candidates": [
+            [
+                "h"
+            ],
+            [
+                "e"
+            ],
+            [
+                "a"
+            ],
+            [
+                "r"
+            ],
+            [
+                "d"
+            ]
+        ],
+        "char_candidates_score": [
+            [
+                0.999
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ]
+        ],
+        "original_rotated_rect": [
+            1082,
+            129,
+            51,
+            17,
+            0
+        ],
+        "_isDefaultRect": false,
+        "begin_time": 9280,
+        "end_time": 9520
+    },
+    {
+        "text": "say,",
+        "handwritten": 0,
+        "rotated_rect": [
+            1125,
+            130,
+            14,
+            17,
+            0
+        ],
+        "char_candidates": [
+            [
+                "i"
+            ],
+            [
+                "t"
+            ]
+        ],
+        "char_candidates_score": [
+            [
+                0.999
+            ],
+            [
+                0.999
+            ]
+        ],
+        "original_rotated_rect": [
+            1125,
+            130,
+            14,
+            17,
+            0
+        ],
+        "_isDefaultRect": false,
+        "begin_time": 9520,
+        "end_time": 9880
+    },
+    {
+        "text": "\"Red",
+        "handwritten": 0,
+        "rotated_rect": [
+            1160,
+            134,
+            38,
+            13,
+            0
+        ],
+        "char_candidates": [
+            [
+                "s"
+            ],
+            [
+                "a"
+            ],
+            [
+                "y"
+            ],
+            [
+                ",",
+                "."
+            ]
+        ],
+        "char_candidates_score": [
+            [
+                0.999
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ],
+            [
+                0.998,
+                0.001
+            ]
+        ],
+        "original_rotated_rect": [
+            1160,
+            134,
+            38,
+            13,
+            0
+        ],
+        "_isDefaultRect": false,
+        "begin_time": 10440,
+        "end_time": 10880
+    },
+    {
+        "text": "flag.\"",
+        "handwritten": 0,
+        "rotated_rect": [
+            1205,
+            126,
+            41,
+            17,
+            0
+        ],
+        "char_candidates": [
+            [
+                "\"",
+                "“",
+                "'",
+                "”"
+            ],
+            [
+                "R"
+            ],
+            [
+                "e"
+            ],
+            [
+                "d"
+            ]
+        ],
+        "char_candidates_score": [
+            [
+                0.691,
+                0.306,
+                0.001,
+                0
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ]
+        ],
+        "original_rotated_rect": [
+            1205,
+            126,
+            41,
+            17,
+            0
+        ],
+        "_isDefaultRect": false,
+        "begin_time": 10880,
+        "end_time": 11400
+    },
+    {
+        "text": "It",
+        "handwritten": 0,
+        "rotated_rect": [
+            824,
+            159,
+            44,
+            16,
+            0
+        ],
+        "char_candidates": [
+            [
+                "f"
+            ],
+            [
+                "l"
+            ],
+            [
+                "a"
+            ],
+            [
+                "g"
+            ],
+            [
+                "\"",
+                "”",
+                ".",
+                ","
+            ]
+        ],
+        "char_candidates_score": [
+            [
+                1
+            ],
+            [
+                0.999
+            ],
+            [
+                1
+            ],
+            [
+                0.999
+            ],
+            [
+                0.978,
+                0.02,
+                0,
+                0
+            ]
+        ],
+        "original_rotated_rect": [
+            824,
+            159,
+            44,
+            16,
+            0
+        ],
+        "_isDefaultRect": false,
+        "begin_time": 11840,
+        "end_time": 12080
+    },
+    {
+        "text": "wasn't",
+        "handwritten": 0,
+        "rotated_rect": [
+            862,
+            160,
+            14,
+            15,
+            0
+        ],
+        "char_candidates": [
+            [
+                "I",
+                "l"
+            ],
+            [
+                "t"
+            ]
+        ],
+        "char_candidates_score": [
+            [
+                0.999,
+                0
+            ],
+            [
+                1
+            ]
+        ],
+        "original_rotated_rect": [
+            862,
+            160,
+            14,
+            15,
+            0
+        ],
+        "_isDefaultRect": false,
+        "begin_time": 12080,
+        "end_time": 12480
+    },
+    {
+        "text": "getting",
+        "handwritten": 0,
+        "rotated_rect": [
+            910,
+            161,
+            61,
+            13,
+            0
+        ],
+        "char_candidates": [
+            [
+                "w"
+            ],
+            [
+                "a"
+            ],
+            [
+                "s"
+            ],
+            [
+                "n"
+            ],
+            [
+                "'"
+            ],
+            [
+                "t"
+            ]
+        ],
+        "char_candidates_score": [
+            [
+                1
+            ],
+            [
+                1
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ],
+            [
+                1
+            ],
+            [
+                0.999
+            ]
+        ],
+        "original_rotated_rect": [
+            910,
+            161,
+            61,
+            13,
+            0
+        ],
+        "_isDefaultRect": false,
+        "begin_time": 12480,
+        "end_time": 12760
+    },
+    {
+        "text": "out",
+        "handwritten": 0,
+        "rotated_rect": [
+            977,
+            164,
+            67,
+            16,
+            0
+        ],
+        "char_candidates": [
+            [
+                "g"
+            ],
+            [
+                "e"
+            ],
+            [
+                "t"
+            ],
+            [
+                "t"
+            ],
+            [
+                "i"
+            ],
+            [
+                "n"
+            ],
+            [
+                "g"
+            ]
+        ],
+        "char_candidates_score": [
+            [
+                1
+            ],
+            [
+                1
+            ],
+            [
+                1
+            ],
+            [
+                0.999
+            ],
+            [
+                1
+            ],
+            [
+                1
+            ],
+            [
+                1
+            ]
+        ],
+        "original_rotated_rect": [
+            977,
+            164,
+            67,
+            16,
+            0
+        ],
+        "_isDefaultRect": false,
+        "begin_time": 12760,
+        "end_time": 12960
+    },
+    {
+        "text": "of",
+        "handwritten": 0,
+        "rotated_rect": [
+            1036,
+            161,
+            29,
+            12,
+            0
+        ],
+        "char_candidates": [
+            [
+                "o"
+            ],
+            [
+                "u"
+            ],
+            [
+                "t"
+            ]
+        ],
+        "char_candidates_score": [
+            [
+                1
+            ],
+            [
+                1
+            ],
+            [
+                1
+            ]
+        ],
+        "original_rotated_rect": [
+            1036,
+            161,
+            29,
+            12,
+            0
+        ],
+        "_isDefaultRect": false,
+        "begin_time": 12960,
+        "end_time": 13120
+    },
+    {
+        "text": "there",
+        "handwritten": 0,
+        "rotated_rect": [
+            1069,
+            160,
+            21,
+            16,
+            0
+        ],
+        "char_candidates": [
+            [
+                "o"
+            ],
+            [
+                "f"
+            ]
+        ],
+        "char_candidates_score": [
+            [
+                1
+            ],
+            [
+                1
+            ]
+        ],
+        "original_rotated_rect": [
+            1069,
+            160,
+            21,
+            16,
+            0
+        ],
+        "_isDefaultRect": false,
+        "begin_time": 13120,
+        "end_time": 13360
+    },
+    {
+        "text": "on",
+        "handwritten": 0,
+        "rotated_rect": [
+            1111,
+            161,
+            49,
+            12,
+            0
+        ],
+        "char_candidates": [
+            [
+                "t"
+            ],
+            [
+                "h"
+            ],
+            [
+                "e"
+            ],
+            [
+                "r"
+            ],
+            [
+                "e"
+            ]
+        ],
+        "char_candidates_score": [
+            [
+                0.999
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ],
+            [
+                1
+            ],
+            [
+                0.999
+            ]
+        ],
+        "original_rotated_rect": [
+            1111,
+            161,
+            49,
+            12,
+            0
+        ],
+        "_isDefaultRect": false,
+        "begin_time": 13360,
+        "end_time": 13520
+    },
+    {
+        "text": "its",
+        "handwritten": 0,
+        "rotated_rect": [
+            1156,
+            161,
+            21,
+            11,
+            0
+        ],
+        "char_candidates": [
+            [
+                "o"
+            ],
+            [
+                "n"
+            ]
+        ],
+        "char_candidates_score": [
+            [
+                0.999
+            ],
+            [
+                0.999
+            ]
+        ],
+        "original_rotated_rect": [
+            1156,
+            161,
+            21,
+            11,
+            0
+        ],
+        "_isDefaultRect": false,
+        "begin_time": 13520,
+        "end_time": 13720
+    },
+    {
+        "text": "own.",
+        "handwritten": 0,
+        "rotated_rect": [
+            1186,
+            160,
+            24,
+            15,
+            0
+        ],
+        "char_candidates": [
+            [
+                "i"
+            ],
+            [
+                "t"
+            ],
+            [
+                "s"
+            ]
+        ],
+        "char_candidates_score": [
+            [
+                1
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ]
+        ],
+        "original_rotated_rect": [
+            1186,
+            160,
+            24,
+            15,
+            0
+        ],
+        "_isDefaultRect": false,
+        "begin_time": 13720,
+        "end_time": 14080
+    },
+    {
+        "text": "",
+        "handwritten": 0,
+        "rotated_rect": [
+            824,
+            195,
+            45,
+            12,
+            0
+        ],
+        "char_candidates": [
+            [
+                "o",
+                "O"
+            ],
+            [
+                "w",
+                "W"
+            ],
+            [
+                "n"
+            ],
+            [
+                "."
+            ]
+        ],
+        "char_candidates_score": [
+            [
+                0.999,
+                0
+            ],
+            [
+                0.999,
+                0
+            ],
+            [
+                0.999
+            ],
+            [
+                0.999
+            ]
+        ],
+        "original_rotated_rect": [
+            824,
+            195,
+            45,
+            12,
+            0
+        ],
+        "_isDefaultRect": false
+    }
+]

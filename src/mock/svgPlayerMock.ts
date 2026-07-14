@@ -7,6 +7,8 @@ import type {
 import kintsugiLongTextResourceJson from "./svg-player/kintsugi-long-text.resource.json";
 import longTextSegmentAssetsJson from "./svg-player/long-text.segment-assets.json";
 import manifestJson from "./svg-player/manifest.json";
+import trinityCompassWordsJson from "./svg-player/trinity-compass.ocr-tts.json";
+import trinityLongTextWordsJson from "./svg-player/trinity-long-text.ocr-tts.json";
 
 // 演示数据的单一入口：manifest 描述分段，具体资源来自同目录 mock 文件。
 const manifest = manifestJson as SegmentManifest;
@@ -128,6 +130,49 @@ export const SVG_PLAYER_LONG_TEXT_IMAGE_URL =
 export const SVG_PLAYER_LONG_TEXT_IMAGE_WIDTH = 1233;
 export const SVG_PLAYER_LONG_TEXT_IMAGE_HEIGHT = 779;
 
+export const SVG_PLAYER_TRINITY_LONG_TEXT_IMAGE_URL =
+  "https://img1.wxzxzj.com/f04e8d402c48f2297d7ff5882ac6d4c6.png";
+export const SVG_PLAYER_TRINITY_LONG_TEXT_IMAGE_WIDTH = 1350;
+export const SVG_PLAYER_TRINITY_LONG_TEXT_IMAGE_HEIGHT = 860;
+
+export const SVG_PLAYER_TRINITY_COMPASS_IMAGE_URL =
+  "https://img1.wxzxzj.com/ad3f16ac92e657e8f4d36bd938ef92ea.png";
+export const SVG_PLAYER_TRINITY_COMPASS_IMAGE_WIDTH = 1361;
+export const SVG_PLAYER_TRINITY_COMPASS_IMAGE_HEIGHT = 855;
+
+const trinityCompassWords = (
+  trinityCompassWordsJson as ResourceMockWord[]
+).filter((word) => String(word.text ?? "").trim().length > 0);
+
+export const SVG_PLAYER_TRINITY_COMPASS_SEGMENT_ASSETS: SegmentAsset[] = [
+  {
+    id: "4856678419",
+    text:
+      'Trinity grabbed her compass. "East by southeast. Home," she commanded. The robot moved slightly and Trinity heard it say, "Red flag." It wasn\'t getting out of there on its own.',
+    audio_url:
+      "https://media.wxzxzj.com/d33f7f75693a729b8ddee30bad303ce7.mp3",
+    highlightColor: "#f2b4ae",
+    ocr_tts: normalizeResourceWords(trinityCompassWords, 0),
+  },
+];
+
+// 落首 T 已经绘制在原图中；过滤它，避免大词框参与普通行聚类。
+const trinityLongTextWords = (
+  trinityLongTextWordsJson as ResourceMockWord[]
+).filter((word) => String(word.text ?? "").trim() !== "T");
+
+export const SVG_PLAYER_TRINITY_LONG_TEXT_SEGMENT_ASSETS: SegmentAsset[] = [
+  {
+    id: "6615857089",
+    text:
+      "rinity was ten minutes early for work, T but the supervisor wasn't impressed. He was reading the data from the tracker in her helmet. It recorded her every step.",
+    audio_url:
+      "https://media.wxzxzj.com/tts/20260713/6b3dd313f4c818fa955967d3ec22190f_eba1c5aec38b85436339b480f4b30ba7.mp3",
+    highlightColor: "#f2b4ae",
+    ocr_tts: normalizeResourceWords(trinityLongTextWords, 0),
+  },
+];
+
 const kintsugiLongTextResource = kintsugiLongTextResourceJson as ResourceMock;
 
 export const SVG_PLAYER_KINTSUGI_LONG_TEXT_IMAGE_URL = normalizeRemoteUrl(
@@ -175,4 +220,6 @@ export const SVG_PLAYER_USED_MOCK_FILES = [
   ...SVG_PLAYER_MANIFEST.segments.flatMap((segment) => [segment.audio, segment.ocr, segment.tts]),
   "long-text.segment-assets.json",
   "kintsugi-long-text.resource.json",
+  "trinity-compass.ocr-tts.json",
+  "trinity-long-text.ocr-tts.json",
 ];

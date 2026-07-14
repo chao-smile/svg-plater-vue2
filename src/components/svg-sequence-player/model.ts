@@ -48,11 +48,9 @@ export function expandBox(box: BBox): BBox {
   };
 }
 
-// 按布局位置把词聚合为行（run）：先分左右列，再按 y 轴近邻聚类。
-function clusterRuns(words: WordModel[], imageWidth: number): WordModel[][] {
+// segment 数据已经按分栏拆分；这里只在 segment 内按 y 轴近邻聚合为行（run）。
+function clusterRuns(words: WordModel[]): WordModel[][] {
   const minLineBaselineTolerance = 8;
-  const left = words.filter((w) => w.bbox.x < imageWidth * 0.55);
-  const right = words.filter((w) => w.bbox.x >= imageWidth * 0.55);
 
   const centerX = (word: WordModel) => word.bbox.x + word.bbox.w / 2;
   const centerY = (word: WordModel) => word.bbox.y + word.bbox.h / 2;
@@ -115,9 +113,9 @@ function clusterRuns(words: WordModel[], imageWidth: number): WordModel[][] {
     return lines;
   };
 
-  const all = [...makeLines(left), ...makeLines(right)].filter((line) => line.length > 0);
-  all.sort((a, b) => a[0]!.bbox.y - b[0]!.bbox.y || a[0]!.bbox.x - b[0]!.bbox.x);
-  return all;
+  const lines = makeLines(words).filter((line) => line.length > 0);
+  lines.sort((a, b) => a[0]!.bbox.y - b[0]!.bbox.y || a[0]!.bbox.x - b[0]!.bbox.x);
+  return lines;
 }
 
 // 将 unknown 安全转换为有限数字，失败时回退 fallback。
@@ -219,10 +217,9 @@ export async function loadSegmentModels(
     const normalized = normalizeSegmentAsset(asset, index);
     const words = buildWords(normalized.ocrTts);
     const inferred = inferImageSize(words);
-    const clusterWidth = imageWidth > 0 ? imageWidth : inferred.width;
     const segmentAverageHeight = averageWordHeight(words);
 
-    const runs: RunModel[] = clusterRuns(words, clusterWidth).map((line, i) => {
+    const runs: RunModel[] = clusterRuns(words).map((line, i) => {
       const bbox = averageHeightBBox(line, segmentAverageHeight);
       const timedWords = line
         .filter(

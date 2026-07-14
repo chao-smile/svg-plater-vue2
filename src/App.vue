@@ -3,8 +3,7 @@
     <header class="header">
       <h1>svg-player</h1>
       <p>
-        基于共享图片 <code>test.png</code> + 5 组
-        <code>audio/ocr/tts</code> 顺序播放。
+        支持多套 <code>image + audio/ocr/tts</code> 数据切换播放。
       </p>
     </header>
 
@@ -194,17 +193,34 @@ import {
   SVG_PLAYER_LONG_TEXT_SEGMENT_ASSETS,
   SVG_PLAYER_MANIFEST_URL,
   SVG_PLAYER_SEGMENT_ASSETS,
+  SVG_PLAYER_TRINITY_COMPASS_IMAGE_HEIGHT,
+  SVG_PLAYER_TRINITY_COMPASS_IMAGE_URL,
+  SVG_PLAYER_TRINITY_COMPASS_IMAGE_WIDTH,
+  SVG_PLAYER_TRINITY_COMPASS_SEGMENT_ASSETS,
+  SVG_PLAYER_TRINITY_LONG_TEXT_IMAGE_HEIGHT,
+  SVG_PLAYER_TRINITY_LONG_TEXT_IMAGE_URL,
+  SVG_PLAYER_TRINITY_LONG_TEXT_IMAGE_WIDTH,
+  SVG_PLAYER_TRINITY_LONG_TEXT_SEGMENT_ASSETS,
   SVG_PLAYER_USED_MOCK_FILES,
 } from "./mock/svgPlayerMock";
 
 const MANIFEST_URL = `${SVG_PLAYER_MANIFEST_URL} (from ${SVG_PLAYER_DATA_ROOT})`;
-type DemoDataset = "original" | "longText" | "kintsugiLongText";
+type DemoDataset =
+  | "trinityCompass"
+  | "trinityLongText"
+  | "original"
+  | "longText"
+  | "kintsugiLongText";
 const demoDatasetOrder: DemoDataset[] = [
+  "trinityCompass",
+  "trinityLongText",
   "original",
   "longText",
   "kintsugiLongText",
 ];
 const demoDatasetLabels: Record<DemoDataset, string> = {
+  trinityCompass: "7/13 Trinity compass 资源数据",
+  trinityLongText: "7/13 Trinity 资源数据（已过滤落首 T）",
   original: "原有 mock 数据",
   longText: "长文本 mock 数据",
   kintsugiLongText: "Kintsugi 长文 mock 数据",
@@ -224,7 +240,7 @@ const playerRef = ref<SvgSequencePlayerExpose | null>(null);
 const playerState = ref<PlayerState>("loading");
 const finishedCount = ref(0);
 const finishedAt = ref("");
-const currentDataset = ref<DemoDataset>("original");
+const currentDataset = ref<DemoDataset>("trinityCompass");
 const asyncDemoStatus = ref("未触发");
 let asyncDemoToken = 0;
 const playbackRateOptions = [1, 1.25, 1.5, 2] as const;
@@ -259,6 +275,26 @@ function applyDemoDataset(dataset: DemoDataset) {
   scrubWasPlaying.value = false;
   currentDataset.value = dataset;
 
+  if (dataset === "trinityCompass") {
+    imageUrl.value = SVG_PLAYER_TRINITY_COMPASS_IMAGE_URL;
+    sourceImageWidth.value = SVG_PLAYER_TRINITY_COMPASS_IMAGE_WIDTH;
+    sourceImageHeight.value = SVG_PLAYER_TRINITY_COMPASS_IMAGE_HEIGHT;
+    segmentAssets.value = cloneSegmentAssets(
+      SVG_PLAYER_TRINITY_COMPASS_SEGMENT_ASSETS,
+    );
+    return;
+  }
+
+  if (dataset === "trinityLongText") {
+    imageUrl.value = SVG_PLAYER_TRINITY_LONG_TEXT_IMAGE_URL;
+    sourceImageWidth.value = SVG_PLAYER_TRINITY_LONG_TEXT_IMAGE_WIDTH;
+    sourceImageHeight.value = SVG_PLAYER_TRINITY_LONG_TEXT_IMAGE_HEIGHT;
+    segmentAssets.value = cloneSegmentAssets(
+      SVG_PLAYER_TRINITY_LONG_TEXT_SEGMENT_ASSETS,
+    );
+    return;
+  }
+
   if (dataset === "longText") {
     imageUrl.value = SVG_PLAYER_LONG_TEXT_IMAGE_URL;
     sourceImageWidth.value = SVG_PLAYER_LONG_TEXT_IMAGE_WIDTH;
@@ -287,7 +323,7 @@ async function loadManifest() {
   loading.value = true;
   errorText.value = "";
   try {
-    applyDemoDataset("original");
+    applyDemoDataset("trinityCompass");
   } catch (e) {
     errorText.value = String((e as Error)?.message ?? e);
   } finally {

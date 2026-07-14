@@ -1,0 +1,582 @@
+[
+    {
+        "text": "rinity",
+        "rotated_rect": [
+            849,
+            329,
+            49,
+            16,
+            0
+        ],
+        "original_rotated_rect": [
+            849,
+            329,
+            49,
+            16,
+            0
+        ],
+        "_isDefaultRect": false,
+        "begin_time": 200,
+        "end_time": 600
+    },
+    {
+        "text": "was",
+        "rotated_rect": [
+            901,
+            328,
+            36,
+            12,
+            0
+        ],
+        "original_rotated_rect": [
+            901,
+            328,
+            36,
+            12,
+            0
+        ],
+        "_isDefaultRect": false,
+        "begin_time": 600,
+        "end_time": 800
+    },
+    {
+        "text": "ten",
+        "rotated_rect": [
+            942,
+            327,
+            28,
+            14,
+            0
+        ],
+        "original_rotated_rect": [
+            942,
+            327,
+            28,
+            14,
+            0
+        ],
+        "_isDefaultRect": false,
+        "begin_time": 800,
+        "end_time": 1080
+    },
+    {
+        "text": "minutes",
+        "rotated_rect": [
+            1004,
+            328,
+            73,
+            12,
+            0
+        ],
+        "original_rotated_rect": [
+            1004,
+            328,
+            73,
+            12,
+            0
+        ],
+        "_isDefaultRect": false,
+        "begin_time": 1080,
+        "end_time": 1360
+    },
+    {
+        "text": "early",
+        "rotated_rect": [
+            1071,
+            329,
+            45,
+            16,
+            0
+        ],
+        "original_rotated_rect": [
+            1071,
+            329,
+            45,
+            16,
+            0
+        ],
+        "_isDefaultRect": false,
+        "begin_time": 1360,
+        "end_time": 1680
+    },
+    {
+        "text": "for",
+        "rotated_rect": [
+            1117,
+            326,
+            28,
+            17,
+            0
+        ],
+        "original_rotated_rect": [
+            1117,
+            326,
+            28,
+            17,
+            0
+        ],
+        "_isDefaultRect": false,
+        "begin_time": 1680,
+        "end_time": 1920
+    },
+    {
+        "text": "work,",
+        "rotated_rect": [
+            1167,
+            330,
+            52,
+            13,
+            0
+        ],
+        "original_rotated_rect": [
+            1167,
+            330,
+            52,
+            13,
+            0
+        ],
+        "_isDefaultRect": false,
+        "begin_time": 1920,
+        "end_time": 2200
+    },
+    {
+        "text": "T",
+        "rotated_rect": [
+            810,
+            341,
+            35,
+            53,
+            0
+        ],
+        "original_rotated_rect": [
+            810,
+            341,
+            35,
+            53,
+            0
+        ],
+        "_isDefaultRect": false,
+        "begin_time": 2480,
+        "end_time": 2760
+    },
+    {
+        "text": "but",
+        "rotated_rect": [
+            842,
+            357,
+            31,
+            16,
+            0
+        ],
+        "original_rotated_rect": [
+            842,
+            357,
+            31,
+            16,
+            0
+        ],
+        "_isDefaultRect": false,
+        "begin_time": 2920,
+        "end_time": 3080
+    },
+    {
+        "text": "the",
+        "rotated_rect": [
+            880,
+            358,
+            28,
+            14,
+            0
+        ],
+        "original_rotated_rect": [
+            880,
+            358,
+            28,
+            14,
+            0
+        ],
+        "_isDefaultRect": false,
+        "begin_time": 3080,
+        "end_time": 3360
+    },
+    {
+        "text": "supervisor",
+        "rotated_rect": [
+            953,
+            359,
+            97,
+            11,
+            0
+        ],
+        "original_rotated_rect": [
+            953,
+            359,
+            97,
+            11,
+            0
+        ],
+        "_isDefaultRect": false,
+        "begin_time": 3360,
+        "end_time": 3960
+    },
+    {
+        "text": "wasn't",
+        "rotated_rect": [
+            1041,
+            359,
+            58,
+            13,
+            0
+        ],
+        "original_rotated_rect": [
+            1041,
+            359,
+            58,
+            13,
+            0
+        ],
+        "_isDefaultRect": false,
+        "begin_time": 3960,
+        "end_time": 4400
+    },
+    {
+        "text": "impressed.",
+        "rotated_rect": [
+            1127,
+            360,
+            102,
+            16,
+            0
+        ],
+        "original_rotated_rect": [
+            1127,
+            360,
+            102,
+            16,
+            0
+        ],
+        "_isDefaultRect": false,
+        "begin_time": 4400,
+        "end_time": 4880
+    },
+    {
+        "text": "He",
+        "rotated_rect": [
+            1198,
+            358,
+            25,
+            16,
+            0
+        ],
+        "original_rotated_rect": [
+            1198,
+            358,
+            25,
+            16,
+            0
+        ],
+        "_isDefaultRect": false,
+        "begin_time": 5120,
+        "end_time": 5240
+    },
+    {
+        "text": "was",
+        "rotated_rect": [
+            814,
+            390,
+            35,
+            12,
+            0
+        ],
+        "original_rotated_rect": [
+            814,
+            390,
+            35,
+            12,
+            0
+        ],
+        "_isDefaultRect": false,
+        "begin_time": 5240,
+        "end_time": 5440
+    },
+    {
+        "text": "reading",
+        "rotated_rect": [
+            874,
+            391,
+            70,
+            16,
+            0
+        ],
+        "original_rotated_rect": [
+            874,
+            391,
+            70,
+            16,
+            0
+        ],
+        "_isDefaultRect": false,
+        "begin_time": 5440,
+        "end_time": 5680
+    },
+    {
+        "text": "the",
+        "rotated_rect": [
+            932,
+            389,
+            29,
+            14,
+            0
+        ],
+        "original_rotated_rect": [
+            932,
+            389,
+            29,
+            14,
+            0
+        ],
+        "_isDefaultRect": false,
+        "begin_time": 5680,
+        "end_time": 5920
+    },
+    {
+        "text": "data",
+        "rotated_rect": [
+            978,
+            388,
+            39,
+            17,
+            0
+        ],
+        "original_rotated_rect": [
+            978,
+            388,
+            39,
+            17,
+            0
+        ],
+        "_isDefaultRect": false,
+        "begin_time": 5920,
+        "end_time": 6120
+    },
+    {
+        "text": "from",
+        "rotated_rect": [
+            1027,
+            388,
+            43,
+            17,
+            0
+        ],
+        "original_rotated_rect": [
+            1027,
+            388,
+            43,
+            17,
+            0
+        ],
+        "_isDefaultRect": false,
+        "begin_time": 6120,
+        "end_time": 6240
+    },
+    {
+        "text": "the",
+        "rotated_rect": [
+            1074,
+            389,
+            29,
+            14,
+            0
+        ],
+        "original_rotated_rect": [
+            1074,
+            389,
+            29,
+            14,
+            0
+        ],
+        "_isDefaultRect": false,
+        "begin_time": 6240,
+        "end_time": 6440
+    },
+    {
+        "text": "tracker",
+        "rotated_rect": [
+            1131,
+            389,
+            65,
+            14,
+            0
+        ],
+        "original_rotated_rect": [
+            1131,
+            389,
+            65,
+            14,
+            0
+        ],
+        "_isDefaultRect": false,
+        "begin_time": 6440,
+        "end_time": 6760
+    },
+    {
+        "text": "in",
+        "rotated_rect": [
+            1181,
+            388,
+            15,
+            17,
+            0
+        ],
+        "original_rotated_rect": [
+            1181,
+            388,
+            15,
+            17,
+            0
+        ],
+        "_isDefaultRect": false,
+        "begin_time": 6760,
+        "end_time": 6880
+    },
+    {
+        "text": "her",
+        "rotated_rect": [
+            1213,
+            388,
+            30,
+            17,
+            0
+        ],
+        "original_rotated_rect": [
+            1213,
+            388,
+            30,
+            17,
+            0
+        ],
+        "_isDefaultRect": false,
+        "begin_time": 6880,
+        "end_time": 7080
+    },
+    {
+        "text": "helmet.",
+        "rotated_rect": [
+            833,
+            420,
+            76,
+            17,
+            0
+        ],
+        "original_rotated_rect": [
+            833,
+            420,
+            76,
+            17,
+            0
+        ],
+        "_isDefaultRect": false,
+        "begin_time": 7080,
+        "end_time": 7440
+    },
+    {
+        "text": "It",
+        "rotated_rect": [
+            880,
+            418,
+            15,
+            15,
+            0
+        ],
+        "original_rotated_rect": [
+            880,
+            418,
+            15,
+            15,
+            0
+        ],
+        "_isDefaultRect": false,
+        "begin_time": 7640,
+        "end_time": 7880
+    },
+    {
+        "text": "recorded",
+        "rotated_rect": [
+            936,
+            418,
+            82,
+            17,
+            0
+        ],
+        "original_rotated_rect": [
+            936,
+            418,
+            82,
+            17,
+            0
+        ],
+        "_isDefaultRect": false,
+        "begin_time": 7880,
+        "end_time": 8240
+    },
+    {
+        "text": "her",
+        "rotated_rect": [
+            1002,
+            418,
+            30,
+            15,
+            0
+        ],
+        "original_rotated_rect": [
+            1002,
+            418,
+            30,
+            15,
+            0
+        ],
+        "_isDefaultRect": false,
+        "begin_time": 8240,
+        "end_time": 8520
+    },
+    {
+        "text": "every",
+        "rotated_rect": [
+            1051,
+            420,
+            49,
+            16,
+            0
+        ],
+        "original_rotated_rect": [
+            1051,
+            420,
+            49,
+            16,
+            0
+        ],
+        "_isDefaultRect": false,
+        "begin_time": 8520,
+        "end_time": 8800
+    },
+    {
+        "text": "step.",
+        "rotated_rect": [
+            1108,
+            421,
+            46,
+            12,
+            0
+        ],
+        "original_rotated_rect": [
+            1108,
+            421,
+            46,
+            12,
+            0
+        ],
+        "_isDefaultRect": false,
+        "begin_time": 8800,
+        "end_time": 9120
+    }
+]
