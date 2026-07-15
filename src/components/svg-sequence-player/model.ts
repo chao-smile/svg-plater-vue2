@@ -48,20 +48,17 @@ export function expandBox(box: BBox): BBox {
   };
 }
 
-function boxesIntersect(a: BBox, b: BBox): boolean {
-  return (
-    a.x < b.x + b.w &&
-    b.x < a.x + a.w &&
-    a.y < b.y + b.h &&
-    b.y < a.y + a.h
-  );
+function horizontalGap(a: BBox, b: BBox): number {
+  const overlap = Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x);
+  return overlap >= 0 ? 0 : Math.abs(overlap);
 }
 
 // 分行算法可能因 OCR 基线轻微倾斜把同一行拆成多个 run。
-// 仅合并视觉矩形确实相交、且垂直中心足够接近的 run，避免误合并相邻正文行。
+// 垂直中心足够接近、且水平间隙不超过正常词间距的 run 可以重新合并。
 function mergeOverlappingRuns(lines: WordModel[][], height: number): WordModel[][] {
   const safeHeight = Math.max(1, height);
   const verticalCenterTolerance = Math.max(2, safeHeight * 0.5);
+  const horizontalGapTolerance = safeHeight * 0.75;
   const effectBox = (line: WordModel[]) => expandBox(averageHeightBBox(line, safeHeight));
   const centerY = (box: BBox) => box.y + box.h / 2;
   const merged: WordModel[][] = [];
@@ -76,7 +73,8 @@ function mergeOverlappingRuns(lines: WordModel[][], height: number): WordModel[]
         const candidateBox = effectBox(candidate);
         return (
           Math.abs(centerY(currentBox) - centerY(candidateBox)) <=
-            verticalCenterTolerance && boxesIntersect(currentBox, candidateBox)
+            verticalCenterTolerance &&
+          horizontalGap(currentBox, candidateBox) <= horizontalGapTolerance
         );
       });
 
@@ -99,73 +97,48 @@ function mergeOverlappingRuns(lines: WordModel[][], height: number): WordModel[]
   return merged;
 }
 
-// segment 数据已经按分栏拆分；这里只在当前 segment 内按 y 轴近邻聚合为行（run）。
+function hasReadableText(text: string): boolean {
+  return /[\p{L}\p{N}]/u.test(text);
+}
+
+// segment 数据已经按分栏拆分；这里只在当前 segment 内先按 y 轴近邻分行，
+// 再在每一行按 x 从左到右排序。避免高低略有差异的窄标点先参与基线拟合，
+// 将本来同一行的正文拆成多个 run。
 function clusterRuns(words: WordModel[]): WordModel[][] {
   const minLineBaselineTolerance = 8;
 
-  const centerX = (word: WordModel) => word.bbox.x + word.bbox.w / 2;
   const centerY = (word: WordModel) => word.bbox.y + word.bbox.h / 2;
+  const sortedByY = [...words].sort(
+    (a, b) => centerY(a) - centerY(b) || a.bbox.x - b.bbox.x,
+  );
+  const lines: WordModel[][] = [];
 
-  const predictBaselineY = (line: WordModel[], x: number) => {
-    if (line.length < 2) return centerY(line[0]!);
+  for (const word of sortedByY) {
+    const cy = centerY(word);
+    let bestLine: WordModel[] | null = null;
+    let bestDistance = Number.POSITIVE_INFINITY;
 
-    let sumX = 0;
-    let sumY = 0;
-    let sumXX = 0;
-    let sumXY = 0;
-    for (const word of line) {
-      const wx = centerX(word);
-      const wy = centerY(word);
-      sumX += wx;
-      sumY += wy;
-      sumXX += wx * wx;
-      sumXY += wx * wy;
-    }
-
-    const n = line.length;
-    const denominator = n * sumXX - sumX * sumX;
-    if (Math.abs(denominator) < 0.000001) return sumY / n;
-
-    const slope = (n * sumXY - sumX * sumY) / denominator;
-    const intercept = (sumY - slope * sumX) / n;
-    return slope * x + intercept;
-  };
-
-  const makeLines = (input: WordModel[]) => {
-    const sorted = [...input].sort(
-      (a, b) => centerY(a) - centerY(b) || a.bbox.x - b.bbox.x,
-    );
-
-    const lines: WordModel[][] = [];
-    for (const word of sorted) {
-      const cx = centerX(word);
-      const cy = centerY(word);
-      let bestLine: WordModel[] | null = null;
-      let bestDistance = Number.POSITIVE_INFINITY;
-
-      for (const line of lines) {
-        const baselineY = predictBaselineY(line, cx);
-        const distance = Math.abs(cy - baselineY);
-        const tolerance = Math.max(minLineBaselineTolerance, averageWordHeight(line) * 0.9);
-        if (distance <= tolerance && distance < bestDistance) {
-          bestLine = line;
-          bestDistance = distance;
-        }
-      }
-
-      if (bestLine) {
-        bestLine.push(word);
-      } else {
-        lines.push([word]);
+    for (const line of lines) {
+      const lineCenterY = line.reduce((sum, item) => sum + centerY(item), 0) / line.length;
+      const maxHeight = Math.max(word.bbox.h, ...line.map((item) => item.bbox.h));
+      const tolerance = Math.max(minLineBaselineTolerance, maxHeight * 0.6);
+      const distance = Math.abs(cy - lineCenterY);
+      if (distance <= tolerance && distance < bestDistance) {
+        bestLine = line;
+        bestDistance = distance;
       }
     }
 
-    for (const line of lines) line.sort((a, b) => a.bbox.x - b.bbox.x);
-    return lines;
-  };
+    if (bestLine) bestLine.push(word);
+    else lines.push([word]);
+  }
 
-  const lines = makeLines(words).filter((line) => line.length > 0);
-  lines.sort((a, b) => a[0]!.bbox.y - b[0]!.bbox.y || a[0]!.bbox.x - b[0]!.bbox.x);
+  for (const line of lines) line.sort((a, b) => a.bbox.x - b.bbox.x);
+  lines.sort((a, b) => {
+    const centerA = a.reduce((sum, word) => sum + centerY(word), 0) / a.length;
+    const centerB = b.reduce((sum, word) => sum + centerY(word), 0) / b.length;
+    return centerA - centerB || a[0]!.bbox.x - b[0]!.bbox.x;
+  });
   return lines;
 }
 
@@ -279,7 +252,9 @@ export async function loadSegmentModels(
       const timedWords = line
         .filter(
           (word): word is TimedWordModel =>
-            typeof word.t0 === "number" && typeof word.t1 === "number",
+            typeof word.t0 === "number" &&
+            typeof word.t1 === "number" &&
+            hasReadableText(word.text),
         )
         .sort((a, b) => a.t0 - b.t0);
       return {
