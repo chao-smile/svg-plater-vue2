@@ -127,6 +127,8 @@ type SegmentAsset = {
 - `rotated_rect` 当前至少会读取前 4 位，按 `[centerX, centerY, width, height, angle]` 处理
 - `begin_time` / `end_time` 单位为毫秒
 - 如果某个词缺少合法时间，组件仍会渲染，但该词不会参与时间驱动高亮
+- 每个 `audio_url` 都按独立音频文件处理，播放时从文件 `0ms` 开始；首词 `begin_time` 之前高亮保持为 0
+- 分段播放以音频原生 `ended` 为结束节点；最后一个词的 `end_time` 只决定高亮完成时间，不会提前截断音频
 
 ## Props
 

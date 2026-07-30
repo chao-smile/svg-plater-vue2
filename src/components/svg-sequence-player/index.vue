@@ -222,8 +222,6 @@ let programmaticScrollLockUntil = 0;
 const audio = new Audio();
 // requestAnimationFrame 句柄。
 let raf = 0;
-// 当前分段停止时间（毫秒）。
-let stopAtMs: number | null = null;
 // 播放流程令牌：用于中断旧异步流程。
 let sequenceToken = 0;
 // 数据加载令牌：用于忽略过期的异步模型构建结果。
@@ -392,7 +390,7 @@ function renderSegmentProgressAt(index: number, timeMs: number) {
   if (!segment) return;
   resetAllProgress();
   currentSegmentIndex.value = index;
-  currentTimeMs.value = clamp(timeMs, segment.t0, segment.t1);
+  currentTimeMs.value = clamp(timeMs, 0, segment.t1);
   lastRenderedSegmentIndex = index;
   for (const run of segment.runs) {
     setRunProgress(run.id, computeRunProgress(run, currentTimeMs.value));
@@ -452,7 +450,7 @@ function resolveInitialTextLineId() {
   return firstLine.id;
 }
 
-// 播放中的逐帧主循环：推进高亮进度并处理分段结束。
+// 播放中的逐帧主循环：推进高亮进度；音频结束统一由 ended 事件处理。
 function tick() {
   const activeIndex = currentSegmentIndex.value;
   const active = segments.value[activeIndex];
@@ -470,14 +468,6 @@ function tick() {
   }
   syncTextFollowOnPlayback();
   emitProgressChange();
-
-  if (stopAtMs != null && tMs >= stopAtMs) {
-    for (const run of active.runs) setRunProgress(run.id, 1);
-    audio.pause();
-    stopRaf();
-    settleSegment(true);
-    return;
-  }
 
   raf = requestAnimationFrame(tick);
 }
@@ -517,7 +507,6 @@ async function prepareSegmentAtPosition(
   if (lastRenderedSegmentIndex >= 0 && lastRenderedSegmentIndex !== index) {
     resetSegmentRunProgress(lastRenderedSegmentIndex);
   }
-  stopAtMs = segment.t1;
   renderSegmentProgressAt(index, timeMs);
 
   if (audio.src !== segment.audioUrl) {
@@ -528,7 +517,7 @@ async function prepareSegmentAtPosition(
 
   try {
     applyPlaybackRate(effectivePlaybackRate.value);
-    await seekToMs(clamp(timeMs, segment.t0, segment.t1), token);
+    await seekToMs(Math.max(0, timeMs), token);
     if (token !== sequenceToken) return false;
     renderSegmentProgressAt(index, audio.currentTime * 1000);
     // 每个分段开播前先把首句“无动画居中”，避免刚播放就先滚一下。
@@ -543,40 +532,18 @@ async function prepareSegmentAtPosition(
   }
 }
 
-// 内部播放单个分段并返回是否成功完成，由连续播放和对外单段播放共同复用。
-async function playSegmentInternal(
-  index: number,
-  token: number,
-  startAtMs?: number,
-): Promise<boolean> {
-  const segment = segments.value[index];
-  if (!segment) return false;
-
-  const prepared = await prepareSegmentAtPosition(
-    index,
-    startAtMs == null ? segment.t0 : startAtMs,
-    token,
-  );
-  if (!prepared || token !== sequenceToken) return false;
-
-  try {
-    await audio.play();
-    if (token !== sequenceToken) return false;
-    applyPlaybackRate(effectivePlaybackRate.value);
-
-    // RAF 驱动视觉更新，避免只靠 audio 事件导致更新不连续。
-    stopRaf();
-    raf = requestAnimationFrame(tick);
-  } catch (e) {
-    if (String((e as Error)?.message ?? e) !== "stale") {
-      console.error(e);
-    }
-    return false;
-  }
-
+// 在调用 play 前注册结束监听，避免极短音频先结束、后挂监听导致播放序列无法继续。
+function waitForSegmentEnd(index: number) {
   return new Promise<boolean>((resolve) => {
-    const onEnded = () => settleSegment(true);
-    const onError = () => settleSegment(false);
+    const onEnded = () => {
+      stopRaf();
+      setCompletedPosition(index);
+      settleSegment(true);
+    };
+    const onError = () => {
+      stopRaf();
+      settleSegment(false);
+    };
     audio.addEventListener("ended", onEnded, { once: true });
     audio.addEventListener("error", onError, { once: true });
 
@@ -587,6 +554,44 @@ async function playSegmentInternal(
 
     resolveSegment = resolve;
   });
+}
+
+// 内部播放单个分段并返回是否成功完成，由连续播放和对外单段播放共同复用。
+async function playSegmentInternal(
+  index: number,
+  token: number,
+  startAtMs?: number,
+): Promise<boolean> {
+  if (!segments.value[index]) return false;
+
+  const prepared = await prepareSegmentAtPosition(
+    index,
+    startAtMs == null ? 0 : startAtMs,
+    token,
+  );
+  if (!prepared || token !== sequenceToken) return false;
+
+  const segmentEnd = waitForSegmentEnd(index);
+  try {
+    await audio.play();
+    if (token !== sequenceToken) {
+      settleSegment(false);
+      return false;
+    }
+
+    // RAF 驱动视觉更新，避免只靠 audio 事件导致更新不连续。
+    if (resolveSegment !== null) {
+      stopRaf();
+      raf = requestAnimationFrame(tick);
+    }
+    return await segmentEnd;
+  } catch (e) {
+    settleSegment(false);
+    if (String((e as Error)?.message ?? e) !== "stale") {
+      console.error(e);
+    }
+    return false;
+  }
 }
 
 function setCompletedPosition(index: number) {
@@ -603,7 +608,6 @@ function setCompletedPosition(index: number) {
 // 内部停止：中断当前流程并重置状态（可选择是否回到 idle/error）。
 function stopInternal(setIdleState = true) {
   sequenceToken += 1;
-  stopAtMs = null;
   lastRenderedSegmentIndex = -1;
   currentTimeMs.value = 0;
   audio.pause();
@@ -644,10 +648,7 @@ async function playAllFromPosition(startIndex = 0, startAtMs?: number) {
     if (!ok || token !== sequenceToken) return;
   }
 
-  audio.pause();
-  stopRaf();
   lastRenderedSegmentIndex = -1;
-  setCompletedPosition(segments.value.length - 1);
   playbackScope = null;
   setState("idle");
   emit("finished");
@@ -671,10 +672,7 @@ async function playSingleFromPosition(index: number, startAtMs?: number) {
   const ok = await playSegmentInternal(index, token, startAtMs);
   if (!ok || token !== sequenceToken) return;
 
-  audio.pause();
-  stopRaf();
   lastRenderedSegmentIndex = -1;
-  setCompletedPosition(index);
   playbackScope = null;
   setState("idle");
 }
