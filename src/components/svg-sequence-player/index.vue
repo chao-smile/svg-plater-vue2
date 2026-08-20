@@ -121,7 +121,11 @@ import {
   ref,
   watch,
 } from "vue";
-import { computeRunProgress, loadSegmentModels } from "./model";
+import {
+  computeRunProgress,
+  loadSegmentModels,
+  splitWordsAtExplicitLineBreaks,
+} from "./model";
 import type {
   PlayerState,
   RunModel,
@@ -1036,7 +1040,7 @@ function buildTextLineModel(
   run: RunModel,
   segment: SegmentModel,
   segmentIndex: number,
-  runIndex: number,
+  lineIdSuffix: string,
 ): TextLineModel {
   const textParts: string[] = [];
   const wordCues: TextWordProgressCue[] = [];
@@ -1058,7 +1062,7 @@ function buildTextLineModel(
 
     if (typeof word.t0 === "number" && typeof word.t1 === "number" && word.t1 > word.t0) {
       wordCues.push({
-        id: `${segment.id}-run-${runIndex + 1}-word-${wordIndex + 1}`,
+        id: `${segment.id}-run-${lineIdSuffix}-word-${wordIndex + 1}`,
         t0: word.t0,
         t1: word.t1,
         startUnit,
@@ -1085,7 +1089,7 @@ function buildTextLineModel(
   const t1 = normalizedCues.length ? normalizedCues[normalizedCues.length - 1]!.t1 : segment.t1;
 
   return {
-    id: `${segment.id}-line-${runIndex + 1}`,
+    id: `${segment.id}-line-${lineIdSuffix}`,
     text: textParts.join("").trim(),
     segmentIndex,
     segmentId: segment.id,
@@ -1100,7 +1104,16 @@ function buildTextLineModel(
 // 文本模式行数据：由分段 runs 动态映射而来。
 const textLines = computed<TextLineModel[]>(() =>
   segments.value.flatMap((segment, segmentIndex) =>
-    segment.runs.map((run, runIndex) => buildTextLineModel(run, segment, segmentIndex, runIndex)),
+    segment.runs.flatMap((run, runIndex) => {
+      const wordGroups = splitWordsAtExplicitLineBreaks(run.words);
+      return wordGroups.map((words, groupIndex) => {
+        const lineIdSuffix =
+          wordGroups.length === 1
+            ? String(runIndex + 1)
+            : `${runIndex + 1}-${groupIndex + 1}`;
+        return buildTextLineModel({ ...run, words }, segment, segmentIndex, lineIdSuffix);
+      });
+    }),
   ),
 );
 

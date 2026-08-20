@@ -124,8 +124,25 @@ function splitRunsAtLargeHorizontalGaps(lines: WordModel[][], height: number): W
   });
 }
 
+export function isExplicitLineBreakText(text: string): boolean {
+  const value = String(text ?? '');
+  return /^(?:\r\n|\r|\n)+$/.test(value) || /^\\+n$/.test(value.trim());
+}
+
+export function splitWordsAtExplicitLineBreaks(words: WordModel[]): WordModel[][] {
+  const groups: WordModel[][] = [[]];
+  for (const word of words) {
+    if (isExplicitLineBreakText(word.text)) {
+      if (groups[groups.length - 1]!.length) groups.push([]);
+      continue;
+    }
+    groups[groups.length - 1]!.push(word);
+  }
+  return groups.filter((group) => group.length);
+}
+
 function hasReadableText(text: string): boolean {
-  return /[\p{L}\p{N}]/u.test(text);
+  return !isExplicitLineBreakText(text) && /[\p{L}\p{N}]/u.test(text);
 }
 
 // 在当前 segment 内先按 y 轴近邻分行，再在每一行按 x 从左到右排序。
