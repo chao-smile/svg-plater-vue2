@@ -97,13 +97,40 @@ function mergeOverlappingRuns(lines: WordModel[][], height: number): WordModel[]
   return merged;
 }
 
+// 合并区域可能同时包含多个旧区域/分栏。同一基线上的词如果横向相距过大，
+// 必须拆成独立 run，避免高亮矩形跨过栏间空白把前后区域串在一起。
+function splitRunsAtLargeHorizontalGaps(lines: WordModel[][], height: number): WordModel[][] {
+  const horizontalGapTolerance = Math.max(8, Math.max(1, height) * 1.5);
+
+  return lines.flatMap((line) => {
+    const sorted = [...line].sort((a, b) => a.bbox.x - b.bbox.x);
+    const runs: WordModel[][] = [];
+    let current: WordModel[] = [];
+    let currentRight = Number.NEGATIVE_INFINITY;
+
+    for (const word of sorted) {
+      const gap = word.bbox.x - currentRight;
+      if (current.length && gap > horizontalGapTolerance) {
+        runs.push(current);
+        current = [];
+        currentRight = Number.NEGATIVE_INFINITY;
+      }
+      current.push(word);
+      currentRight = Math.max(currentRight, word.bbox.x + word.bbox.w);
+    }
+
+    if (current.length) runs.push(current);
+    return runs;
+  });
+}
+
 function hasReadableText(text: string): boolean {
   return /[\p{L}\p{N}]/u.test(text);
 }
 
-// segment 数据已经按分栏拆分；这里只在当前 segment 内先按 y 轴近邻分行，
-// 再在每一行按 x 从左到右排序。避免高低略有差异的窄标点先参与基线拟合，
-// 将本来同一行的正文拆成多个 run。
+// 在当前 segment 内先按 y 轴近邻分行，再在每一行按 x 从左到右排序。
+// 合并区域可能跨分栏，后续还会按水平大间距把同一基线拆成多个 run。
+// 避免高低略有差异的窄标点先参与基线拟合，将本来同一行的正文拆散。
 function clusterRuns(words: WordModel[]): WordModel[][] {
   const minLineBaselineTolerance = 8;
 
@@ -243,7 +270,7 @@ export async function loadSegmentModels(
     const inferred = inferImageSize(words);
     const segmentAverageHeight = averageWordHeight(words);
     const mergedLines = mergeOverlappingRuns(
-      clusterRuns(words),
+      splitRunsAtLargeHorizontalGaps(clusterRuns(words), segmentAverageHeight),
       segmentAverageHeight,
     );
 
