@@ -142,7 +142,7 @@ export function splitWordsAtExplicitLineBreaks(words: WordModel[]): WordModel[][
 }
 
 function hasReadableText(text: string): boolean {
-  return !isExplicitLineBreakText(text) && /[\p{L}\p{N}]/u.test(text);
+  return /[\p{L}\p{N}]/u.test(text);
 }
 
 // 在当前 segment 内先按 y 轴近邻分行，再在每一行按 x 从左到右排序。

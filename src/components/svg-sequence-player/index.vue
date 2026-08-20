@@ -98,7 +98,10 @@
           :key="line.id"
           :ref="(el) => bindTextLineEl(line.id, el)"
           class="text-segment"
-          :class="{ active: index === activeTextLineIndex }"
+          :class="{
+            active: index === activeTextLineIndex,
+            'paragraph-start': line.isParagraphStart,
+          }"
           :style="textLineStyle(index, line)"
         >
           {{ line.text }}
@@ -153,6 +156,7 @@ type TextLineModel = {
   t0: number;
   t1: number;
   totalUnits: number;
+  isParagraphStart: boolean;
   wordCues: TextWordProgressCue[];
 };
 
@@ -1041,6 +1045,7 @@ function buildTextLineModel(
   segment: SegmentModel,
   segmentIndex: number,
   lineIdSuffix: string,
+  isParagraphStart: boolean,
 ): TextLineModel {
   const textParts: string[] = [];
   const wordCues: TextWordProgressCue[] = [];
@@ -1097,6 +1102,7 @@ function buildTextLineModel(
     t0,
     t1,
     totalUnits,
+    isParagraphStart,
     wordCues: normalizedCues,
   };
 }
@@ -1111,7 +1117,15 @@ const textLines = computed<TextLineModel[]>(() =>
           wordGroups.length === 1
             ? String(runIndex + 1)
             : `${runIndex + 1}-${groupIndex + 1}`;
-        return buildTextLineModel({ ...run, words }, segment, segmentIndex, lineIdSuffix);
+        // 每个 segment 的首行与显式换行后的新行使用相同的段首缩进。
+        const isParagraphStart = runIndex === 0 || groupIndex > 0;
+        return buildTextLineModel(
+          { ...run, words },
+          segment,
+          segmentIndex,
+          lineIdSuffix,
+          isParagraphStart,
+        );
       });
     }),
   ),
@@ -1522,6 +1536,10 @@ defineExpose<SvgSequencePlayerExpose>({
 
 .text-segment.active {
   opacity: 1;
+}
+
+.text-segment.paragraph-start {
+  text-indent: 2em;
 }
 
 .base {
